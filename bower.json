@@ -1,0 +1,23 @@
+{
+  "name": "ahs502-nodejs-template",
+  "description": "A Node.js-based template for WebServer of WebApps.",
+  "main": "./bin/www",
+  "authors": [
+    "Hessam A Shokravi <ahs502@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "nodejs",
+    "webserver",
+    "webapp"
+  ],
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
