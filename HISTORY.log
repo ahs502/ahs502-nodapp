@@ -7,19 +7,21 @@
 > Test project :
 
     $ npm install
-    $ npm start
+    $ npm start   # Ctrl+C to terminate
 
 > Initialize bower :
 
+    $ sudo npm install -g bower
+    
     $ bower init
     $ bower install
 
 > Add and fill some files :
 
-    $ touch README.md
-    $ touch .gitignore
-    $ touch TODO
-    $ touch HISTORY.log
+    $ touch README.md   # Make your project documentation
+    $ touch .gitignore   # Fill the list
+    $ touch TODO   # Free to use
+    $ touch HISTORY.log   # Me only !
 
 > Install some npm packages :
 
@@ -28,7 +30,7 @@
 > Setup git :
 
     $ git init
-    $ git status
+    $ git status   # To see details
     $ git add .
     $ git commit -am "Initial commit; Project has been created."
     
@@ -53,4 +55,30 @@
 
 > Create a gulpfile.js at the root of project :
 
-    $ touch gulpfile.js
+    $ touch gulpfile.js   # Code it
+
+> Install common bower packages :
+
+    $ bower install --save jquery
+    $ bower install --save angular angular-ui-router ui-router-extras
+
+> Setup SemanticUI :
+
+    $ bower install --save semantic-ui
+    $ cd bower_components/semantic/
+    $ npm install   # Needs initial setup
+    $ cat gulpfile.js   # Or see: http://semantic-ui.com/introduction/build-tools.html
+    $ cat semantic.json   # Helps a lot!
+    
+    To prevent 'default' theme of semantic-ui to download fonts from Google :
+    $ nano src/themes/default/globals/site.variables
+    Then, change '@importGoogleFonts : true;' to '@importGoogleFonts : false;' and save,
+    
+    For Right-to-left languages :
+    $ nano semantic.json
+    Then, change 'rtl' to 'true',
+    And change link "semantic/dist/semantic.css" to "semantic/dist/semantic.rtl.css" in page,
+    
+    $ gulp clean   # Specially when this is not the first build
+    $ gulp build
+    $ cd ../..
