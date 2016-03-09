@@ -141,23 +141,23 @@ gulp.task('help', callback => {
     var help = [
         "=============================================".rainbow,
         "",
-        " Usage: " + "gulp".bold + " to ...",
-        "        " + "gulp COMMAND".bold,
+        " >> Usage: " + "gulp".bold + " to build, watch & start, or",
+        "           " + "gulp COMMAND".bold,
         "",
         " COMMAND".bold + " can be:",
         "",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
-        "     build  ".bold + "to...",
+        "     clean       ".bold + "Cleans up public/dist folder",
+        "     build       ".bold + "Builds all files",
+        "     build-js    ".bold + "Builds javascript files",
+        "     build-css   ".bold + "Builds stylesheet files",
+        "     start       ".bold + "Starts Node.js express server",
+        "     stop        ".bold + "Stops Node.js express server",
+        "     watch       ".bold + "Watchs changes to source files to build",
         "",
         "=============================================".rainbow,
         ];
     
-    help.forEach(line => console.log(line));
+    help.forEach(line => process.stdout.write(line + '\n'));
     callback();
 });
 
