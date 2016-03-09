@@ -1,0 +1,47 @@
+> Connect to it :
+
+    $ ssh root@136.243.163.18
+
+> Install some npm packages :
+
+    # npm install -g gulp bower express express-generator
+
+> Install some yum packages :
+
+    # yum install -y nano mc
+
+> Install git :
+
+    # sudo yum install -y git
+    # git --version   # To check the results
+
+    Then, setup git :
+
+    # git config --global user.name "Hessam A Shokravi"
+    # git config --global user.email "ahs502@gmail.com"
+    # git config --list   # To check the results
+
+> Setup git :
+
+    # ssh-keygen -t rsa -b 4096 -C "ahs502@gmail.com"
+    # eval "$(ssh-agent -s)"   # Start the ssh-agent in the background
+    # ssh-add ~/.ssh/id_rsa   # Add your SSH key to the ssh-agent
+    # cat ~/.ssh/id_rsa.pub   # Copy it and add it to remote repository account
+
+> Clone project :
+
+    # git clone git@github.com:ahs502/ahs502-nodapp.git
+
+> Set bower components folder :
+
+    # touch .bowerrc   # And set "directory" into it
+
+> Install project packages :
+
+    # npm install
+    # sudo bower install --allow-root
+
+    Then, disable Google fonts like described earlier.
+
+> 
+

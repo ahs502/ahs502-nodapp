@@ -14,7 +14,7 @@ public/dist/
  
 *.csv
 *.dat
-*.log
+#*.log
 *.out
 *.pid
 *.seed
