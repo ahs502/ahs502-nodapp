@@ -15,7 +15,6 @@
     "jade": "~1.11.0",
     "morgan": "~1.6.1",
     "serve-favicon": "~2.3.0",
-    "sleep": "^3.0.1",
     "sync-exec": "^0.6.2"
   },
   "devDependencies": {
@@ -33,7 +32,6 @@
     "gulp-uglifycss": "^1.0.5",
     "gulp-util": "^3.0.7",
     "run-sequence": "^1.1.5",
-    "sleep": "^3.0.1",
     "sync-exec": "^0.6.2"
   }
 }

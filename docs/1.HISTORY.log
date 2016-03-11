@@ -25,7 +25,7 @@
 
 > Install some npm packages :
 
-    $ npm install --save --save-dev colors console-prompt sleep sync-exec del
+    $ npm install --save --save-dev colors console-prompt sync-exec del
 
 > Setup git :
 
