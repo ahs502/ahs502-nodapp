@@ -1,0 +1,16 @@
+> Install Cloud9 IDE : (for more information, see: https://github.com/c9/core/)
+
+	# apt-get install -y build-essential
+	# git clone git://github.com/c9/core.git c9sdk
+	# cd c9sdk
+	# scripts/install-sdk.sh
+
+	In order to update to the latest version :
+
+	# git pull origin master
+	# scripts/install-sdk.sh
+
+	And, to launch cloud9 :
+
+	# node server.js --port 8080 --auth "root:ahs 502" --listen 0.0.0.0 -w ~ &
+

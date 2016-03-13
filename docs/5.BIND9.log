@@ -1,0 +1,96 @@
+> Setup bind9 :
+
+    # apt-get install -y bind9
+    # cd /etc/bind/
+    # nano named.conf.local   # Add the following lines :
+===============================================================================
+zone "ahs502.ir" {
+        type master;
+        file "/etc/bind/zones/ahs502.ir.db";
+};
+
+zone "hesamhesab.ir" {
+        type master;
+        file "/etc/bind/zones/hesamhesab.ir.db";
+};
+
+zone "163.243.136.in-addr.arpa" {
+        type master;
+        file "/etc/bind/zones/rev.163.243.136.in-addr.arpa";
+};
+-------------------------------------------------------------------------------
+    # mkdir zones
+    # cd zones/
+    # nano ahs502.ir.db   # Add the following lines :
+===============================================================================
+$TTL 14400
+@ IN SOA ns1.ahs502.ir. host.ahs502.ir. (
+               201006601 ; Serial
+               7200      ; Refresh
+               120       ; Retry
+               2419200   ; Expire
+               604800)   ; Default TTL
+
+ahs502.ir. IN NS    ns1.ahs502.ir.
+
+ahs502.ir. IN MX 10 mail.ahs502.ir.
+ahs502.ir. IN A     136.243.163.18
+
+ns1  IN A     136.243.163.18
+www  IN CNAME ahs502.ir.
+mail IN A     136.243.163.18
+-------------------------------------------------------------------------------
+    # named-checkzone ahs502.ir ahs502.ir.db   # Check zone
+    # nano hesamhesab.ir.db   # Add the following lines :
+===============================================================================
+$TTL 14400
+@ IN SOA ns1.hesamhesab.ir. host.hesamhesab.ir. (
+               201006602 ; Serial
+               7200      ; Refresh
+               120       ; Retry
+               2419200   ; Expire
+               604800)   ; Default TTL
+
+hesamhesab.ir. IN NS    ns1.hesamhesab.ir.
+
+hesamhesab.ir. IN MX 10 mail.hesamhesab.ir.
+hesamhesab.ir. IN A     136.243.163.18
+
+ns1  IN A     136.243.163.18
+www  IN CNAME hesamhesab.ir.
+mail IN A     136.243.163.18
+-------------------------------------------------------------------------------
+    # named-checkzone hesamhesab.ir hesamhesab.ir.db   # Check zone
+    # nano rev.163.243.136.in-addr.arpa   # Add the following lines :
+===============================================================================
+$TTL 14400
+@ IN SOA ahs502.ir. host.ahs502.ir. (
+              2010081401;
+              28800;
+              604800;
+              604800;
+              86400);
+
+@ IN NS ns1.ahs502.ir.
+-------------------------------------------------------------------------------
+    # cd /etc/
+    # nano resolv.conf   # This part needs some R&D !
+===============================================================================
+#nameserver 136.243.163.18
+domain ahs502.ir
+search ahs502.ir
+nameserver 213.133.98.98
+nameserver 213.133.100.100
+-------------------------------------------------------------------------------
+    # /etc/init.d/bind9 restart   # Restart bind9
+    # tail -f /var/log/syslog   # It must NOT contain any errors
+    # nslookup ahs502.ir   # Check first domain
+    # nslookup hesamhesab.ir   # Check second domain
+    # host 136.243.163.18   # Check reverse zone
+    # cd   # Optional
+
+    Finally, add your nameservers to your domain provider :
+       * ns1.ahs502.ir with IP: 136.243.163.18 for ahs502.ir
+       * ns1.hesamhesab.ir with IP: 136.243.163.18 for hesamhesab.ir
+
+    Now, you should wait a couple of hours or a day to see the results !
