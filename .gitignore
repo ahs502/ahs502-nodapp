@@ -2,12 +2,15 @@
  
 node_modules/*
 
-bower_components/*
-!bower_components/semantic-ui/
-bower_components/semantic-ui/*
-!bower_components/semantic-ui/src/
-!bower_components/semantic-ui/dist/
- 
+#bower_components/*
+#!bower_components/semantic-ui/
+#bower_components/semantic-ui/*
+#!bower_components/semantic-ui/src/
+#!bower_components/semantic-ui/dist/
+
+lib/*
+!lib/dist/
+
 public/audio/
 public/video/
 public/dist/

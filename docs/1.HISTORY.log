@@ -82,3 +82,18 @@
     $ gulp clean   # Specially when this is not the first build
     $ gulp build
     $ cd ../..
+
+> CENTOS done.
+> UBUNTU done.
+> CLOUD9 done.
+> BIND9 done.
+
+> lib/ folder needs to be re-structured :
+
+    # nano .gitignore   # Modify to exclude lib/* but lib/dist/
+    # cd lib/
+    # mkdir dist
+    
+    Then, copy all dist part of client-side modules into lib/dist/
+    After this point on, put just the included part of client-side modules
+        from their main directory in corresponding path in lib/dist/ .
