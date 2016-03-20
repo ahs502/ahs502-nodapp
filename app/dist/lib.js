@@ -1,3 +1,4 @@
+// AHS502 : Application libraries javascript file :
 
 /*
 	AHS502 : Start of 'app/lib/angular/angular.min.js'

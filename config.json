@@ -2,16 +2,6 @@
 
     "buildPaths": {
 
-        "app": {
-            "src": "./app/src/",
-            "style": "./app/style/",
-
-            "javascript": "app.js",
-            "stylesheet": "app.css",
-            "javascriptMinified": "app.min.js",
-            "stylesheetMinified": "app.min.css"
-        },
-
         "lib": {
             "js": [
                 "./app/lib/angular/angular.min.js",
@@ -32,7 +22,25 @@
             "stylesheetMinified": "lib.min.css"
         },
 
-        "dist": "./app/dist/"
+        "app": {
+            "src": "./app/src/",
+            "style": "./app/style/",
+
+            "javascript": "app.js",
+            "stylesheet": "app.css",
+            "javascriptMinified": "app.min.js",
+            "stylesheetMinified": "app.min.css"
+        },
+
+        "dist": "./app/dist/",
+        "routes": [
+            "./routes/**/*.js",
+            "./routes/**/*.coffee"
+        ],
+        "assets":[
+            "./app/assets/**/*.*",
+            "./public/**/*.*"
+        ]
 
     },
 

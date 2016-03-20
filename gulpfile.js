@@ -51,10 +51,10 @@ var paths = config.buildPaths;
 gulp.task('clean', callback => {
     del([path.join(paths.dist, '*')]).then(items => {
         if (items && items.length && items.length > 0) {
-            util.log(' => Deleted files and folders :'.green);
+            util.log(' -> ' + 'Deleted files and folders :'.green);
             items.forEach(item => util.log(item.yellow));
         }
-        util.log(' => Already clean !'.green);
+        util.log(' => ' + 'Already clean !'.green);
         callback();
     });
 });
@@ -103,7 +103,7 @@ gulp.task('build-app-js', () => {
         // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
         .pipe(rename(paths.app.javascriptMinified))
         .pipe(gulp.dest(paths.dist))
-        .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified javascript file has been created.'.green))
+        .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified javascript file has been created.'.green));
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -146,7 +146,7 @@ gulp.task('build-app-css', () => {
             header: "\n/*\n\tAHS502 : Start of '${filename}'\n*/\n\n",
             footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
         }))
-        .pipe(file('introduction.css', "// AHS502 : Application stylesheet file :"))
+        .pipe(file('introduction.css', "/* AHS502 : Application stylesheet file : */"))
         .pipe(concat(paths.app.stylesheet))
         .pipe(gulp.dest(paths.dist))
         .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Stylesheet file has been created.'.green))
@@ -155,7 +155,7 @@ gulp.task('build-app-css', () => {
         // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
         .pipe(rename(paths.app.stylesheetMinified))
         .pipe(gulp.dest(paths.dist))
-        .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified stylesheet file has been created.'.green))
+        .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified stylesheet file has been created.'.green));
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -197,7 +197,7 @@ gulp.task('build-lib-css', () =>
         header: "\n/*\n\tAHS502 : Start of '${filename}'\n*/\n\n",
         footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
     }))
-    .pipe(file('introduction.css', "// AHS502 : Application libraries stylesheet file :"))
+    .pipe(file('introduction.css', "/* AHS502 : Application libraries stylesheet file : */"))
     .pipe(concat(paths.lib.stylesheet))
     .pipe(gulp.dest(paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Stylesheet file has been created.'.green))
@@ -234,7 +234,7 @@ gulp.task('start-node', callback => {
         return callback();
     }
 
-    var child = childProcess.spawn('/usr/local/bin/node', ['./bin/start'], {
+    var child = childProcess.spawn('/usr/bin/node', ['./bin/start'], {
         env: {
             PORT: config.nodePort
         }
@@ -245,7 +245,7 @@ gulp.task('start-node', callback => {
     child.stdout.on('data', data => process.stdout.write(data));
     child.stderr.on('data', data => process.stderr.write(data));
 
-    util.log((' => ' + 'Node.js'.bold + ' started with pid = ' + String(pId).bold + ' :').green);
+    util.log(' => ' + ('Node.js'.bold + ' started with pid = ' + String(pId).bold + ' :').green);
 
     callback();
 });
@@ -279,41 +279,18 @@ gulp.task('restart-node', callback => {
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('watch', callback => {
+
     gulp.watch(path.join(paths.app.src, '**/*.js'), ['build-app-js' /*, 'restart-browser'*/ ]);
     gulp.watch(path.join(paths.app.src, '**/*.coffee'), ['build-app-js' /*, 'restart-browser'*/ ]);
     gulp.watch(path.join(paths.app.style, '**/*.css'), ['build-app-css' /*, 'restart-browser'*/ ]);
     gulp.watch(path.join(paths.app.style, '**/*.less'), ['build-app-css' /*, 'restart-browser'*/ ]);
+
+    gulp.watch(paths.assets, [ /*'restart-browser'*/ ]);
+
+    gulp.watch(paths.routes, ['restart-node']);
+
     callback();
 });
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -327,7 +304,7 @@ gulp.task('default', ['build', 'watch', 'start-node'], callback => {
 gulp.task('help', callback => {
 
     //TODO: Upgrade help:
-    
+
     // var help = [
     //     "=================================================".rainbow,
     //     "",
