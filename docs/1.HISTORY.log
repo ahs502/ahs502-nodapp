@@ -94,6 +94,7 @@
     # cd lib/
     # mkdir dist
     
-    Then, copy all dist part of client-side modules into lib/dist/
+    Then, copy all dist part of client-side modules into lib/dist/ .
     After this point on, put just the included part of client-side modules
         from their main directory in corresponding path in lib/dist/ .
+

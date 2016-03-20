@@ -1,0 +1,41 @@
+{
+
+    "buildPaths": {
+
+        "app": {
+            "src": "./app/src/",
+            "style": "./app/style/",
+
+            "javascript": "app.js",
+            "stylesheet": "app.css",
+            "javascriptMinified": "app.min.js",
+            "stylesheetMinified": "app.min.css"
+        },
+
+        "lib": {
+            "js": [
+                "./app/lib/angular/angular.min.js",
+                "./app/lib/angular-ui-router/release/angular-ui-router.min.js",
+                "./app/lib/jquery/dist/jquery.min.js",
+                "./app/lib/semantic/dist/semantic.min.js",
+                "./app/lib/ui-router-extras/release/ct-ui-router-extras.min.js"
+            ],
+            "css": [
+                "./app/lib/semantic/dist/semantic.min.css"
+            ],
+
+            "base": "./app/lib/",
+
+            "javascript": "lib.js",
+            "stylesheet": "lib.css",
+            "javascriptMinified": "lib.min.js",
+            "stylesheetMinified": "lib.min.css"
+        },
+
+        "dist": "./app/dist/"
+
+    },
+
+    "nodePort": 12345
+
+}

@@ -1,6 +1,7 @@
 !.gitignore
- 
+
 node_modules/*
+npm-debug.log
 
 #bower_components/*
 #!bower_components/semantic-ui/
@@ -8,13 +9,14 @@ node_modules/*
 #!bower_components/semantic-ui/src/
 #!bower_components/semantic-ui/dist/
 
-lib/*
-!lib/dist/
+app/lib/semantic/*
+!app/lib/semantic/dist/
+!app/lib/semantic/src/
+!app/lib/semantic/semantic.json
 
-public/audio/
-public/video/
-public/dist/
- 
+app/assets/audio/
+app/assets/video/
+
 *.csv
 *.dat
 #*.log
@@ -25,3 +27,4 @@ public/dist/
 *.swo
 *.swp
 *.tgz
+
