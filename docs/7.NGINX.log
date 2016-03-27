@@ -1,0 +1,48 @@
+> Install nginx :
+
+    # sudo apt-get update
+    # sudo apt-get install -y nginx
+    
+> Manage nginx :
+
+    To stop your web server, you can type:
+    
+    # sudo service nginx stop
+    
+    To start the web server when it is stopped, type:
+    
+    # sudo service nginx start
+    
+    To stop and then start the service again, type:
+    
+    # sudo service nginx restart
+    
+> Edit file '/etc/nginx/sites-available/default' :
+
+    # cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
+    # nano /etc/nginx/sites-available/default
+
+> Clear up the entire file and place this part of text for each service :
+
+    Note that this is for domain: 'my-domain1.ir' which is being served on port '1234' :
+
+===============================================================================
+server {
+    listen 80;
+    server_name my-domain1.ir;
+    location / {
+        proxy_pass http://localhost:1234;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+-------------------------------------------------------------------------------
+
+> Reload nginx :
+
+    # nginx -s reload
+
+

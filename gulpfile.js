@@ -13,6 +13,7 @@ var merge = require("merge-stream");
 var wrapper = require("gulp-wrapper");
 var filter = require("gulp-filter");
 var file = require("gulp-file");
+var shell = require("gulp-shell");
 
 var runSequence = require('run-sequence');
 
@@ -24,26 +25,7 @@ var childProcess = require('child_process');
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-function appPath(basePath, extensions, reverse) {
-    function subPath(midPath) {
-        return extensions.map(extension => path.join(basePath, midPath, '*.' + extension));
-    }
-    var files = [
-        subPath('/'),
-        subPath('/*/'),
-        subPath('/*/*/'),
-        subPath('/*/*/*/'),
-        subPath('/*/*/*/*/'),
-        subPath('/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/*/**/')
-    ].reduce((total, current, index, array) => total.concat(current), []);
-    reverse && files.reverse();
-    return files;
-}
-
-var config = require("./config.json");
+var config = require("./config");
 var paths = config.buildPaths;
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -301,6 +283,152 @@ gulp.task('default', ['build', 'watch', 'start-node'], callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+gulp.task('bind9', callback => {
+    var ip = config.serverIp || "11.22.33.44",
+        dns = config.dns || {},
+        named_conf_local = "",
+        zone_db = {},
+        mainDomain;
+
+    for (var domain in dns) {
+        mainDomain = mainDomain || domain;
+
+        var domainConfig = dns[domain] = dns[domain] || {},
+            ns = domainConfig.ns = domainConfig.ns || ["ns1"],
+            mail = domainConfig.mail = domainConfig.mail || "mail",
+            root = domainConfig.root = domainConfig.root || "host",
+            subdomains = domainConfig.subdomains = domainConfig.subdomains || ["www"],
+            data = domainConfig.data = domainConfig.data || {};
+        (subdomains.indexOf("www") < 0) && subdomains.push("www");
+        (subdomains.indexOf(mail) < 0) && subdomains.push(mail);
+        ns.forEach(ns0 => (subdomains.indexOf(ns0) < 0) && subdomains.push(ns0));
+        data["www"] = data["www"] || "CNAME";
+
+        var resolver = subdomain => {
+            var res = data[subdomain] || "A";
+            (res == "A") && (res = "A " + ip);
+            (res == "CNAME") && (res = "CNAME " + domain + ".");
+            return res;
+        };
+
+        named_conf_local +=
+            'zone "' + domain + '" {\n' +
+            '        type master;\n' +
+            '        file "/etc/bind/zones/' + domain + '.db";\n' +
+            '};\n' +
+            '\n';
+
+        var db =
+            "$TTL 14400\n" +
+            "@ IN SOA " + ns[0] + "." + domain + ". " + root + "." + domain + ". (\n" +
+            "               2016032700 ; Serial\n" +
+            "               7200       ; Refresh\n" +
+            "               120        ; Retry\n" +
+            "               2419200    ; Expire\n" +
+            "               604800)    ; Default TTL\n" +
+            "\n";
+        ns.forEach(ns0 => db += domain + ". IN NS " + ns0 + "." + domain + ".\n");
+        db +=
+            "\n" +
+            domain + ". IN MX 10 " + mail + "." + domain + ".\n" +
+            domain + ". IN A " + ip + "\n" +
+            "\n";
+
+        subdomains.forEach(subdomain => db += subdomain + " IN " + resolver(subdomain) + "\n");
+        zone_db[domain + ".db"] = db;
+    }
+
+    var reverseZone = ip.split('.').reverse().slice(1).join('.') + ".in-addr.arpa";
+
+    named_conf_local +=
+        'zone "' + reverseZone + '" {\n' +
+        '        type master;\n' +
+        '        file "/etc/bind/zones/rev.' + reverseZone + '";\n' +
+        '};\n' +
+        '\n';
+
+    zone_db["rev." + reverseZone] =
+        "$TTL 14400\n" +
+        "@ IN SOA " + mainDomain + ". " + dns[mainDomain].root + "." + mainDomain + ". (\n" +
+        "              2016032700 ; Serial\n" +
+        "              28800      ;\n" +
+        "              604800     ;\n" +
+        "              604800     ;\n" +
+        "              86400)     ;\n" +
+        "\n" +
+        "@ IN NS " + dns[mainDomain].ns[0] + "." + mainDomain + ".\n";
+
+    //TODO: What about '/etc/resolv.conf' ? It needs some R&D !
+
+    var streams = [file('named.conf.local', named_conf_local, {
+            src: true
+        })
+        .pipe(gulp.dest('/etc/bind/'))
+        .pipe(gprint(file => ' -> [' + 'bind9'.blue + '] ' + file + ' has been saved.'.green))
+    ];
+
+    for (var zoneFile in zone_db) {
+        streams.push(file(zoneFile, zone_db[zoneFile], {
+                src: true
+            })
+            .pipe(gulp.dest('/etc/bind/zones/'))
+            .pipe(gprint(file => ' -> [' + 'bind9'.blue + '] ' + file + ' has been saved.'.green)));
+    };
+
+    return merge.apply(this, streams)
+        .pipe(concat('dumb.file'))
+        .pipe(shell([
+            "./bin/bind9-zone-serial-update.sh",
+            "/etc/init.d/bind9 restart"
+        ], {
+            quiet: true
+        }))
+        .on('end', () => {
+            util.log(' => [' + 'bind9'.bold.blue + '] ' + 'Route servers have been set.'.green);
+            util.log(' -> [' + 'bind9'.bold.blue + '] ' + 'Use the following commands to check the results :');
+            util.log('            tail -f /var/log/syslog'.bold.cyan + '   It should contain no errors !'.gray);
+            util.log('            nslookup '.bold.cyan + 'domain.ir'.cyan + '        Check domain zone for every domain,'.gray);
+            util.log('            host '.bold.cyan + 'xx.xx.xx.xx'.cyan + '          Check reverse zone.'.gray);
+        });
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('nginx', () => {
+    util.log(" -> [" + 'nginx'.yellow + "] Configuring nginx on your server...");
+
+    var data = "",
+        routes = (config && config.nginx) || {};
+
+    for (var domain in routes) {
+        data +=
+            "server {\n" +
+            "    listen 80;\n" +
+            "    server_name " + domain + ";\n" +
+            "    location / {\n" +
+            "        proxy_pass " + routes[domain] + ";\n" +
+            "        proxy_http_version 1.1;\n" +
+            "        proxy_set_header Upgrade $http_upgrade;\n" +
+            "        proxy_set_header Connection 'upgrade';\n" +
+            "        proxy_set_header Host $host;\n" +
+            "        proxy_cache_bypass $http_upgrade;\n" +
+            "    }\n" +
+            "}\n" +
+            "\n";
+    }
+
+    return file('default', data, {
+            src: true
+        })
+        .pipe(gulp.dest('/etc/nginx/sites-available/'))
+        .pipe(shell(["sudo nginx -s reload"], {
+            quiet: true
+        }))
+        .on('end', () => util.log(' => [' + 'nginx'.bold.yellow + '] ' + 'Route servers have been set.'.green));
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
 gulp.task('help', callback => {
 
     //TODO: Upgrade help:
@@ -327,5 +455,30 @@ gulp.task('help', callback => {
     // help.forEach(line => process.stdout.write(line + '\n'));
     callback();
 });
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+function appPath(basePath, extensions, reverse) {
+    function subPath(midPath) {
+        return extensions.map(extension => path.join(basePath, midPath, '*.' + extension));
+    }
+    var files = [
+        subPath('/'),
+        subPath('/*/'),
+        subPath('/*/*/'),
+        subPath('/*/*/*/'),
+        subPath('/*/*/*/*/'),
+        subPath('/*/*/*/*/*/'),
+        subPath('/*/*/*/*/*/*/'),
+        subPath('/*/*/*/*/*/*/*/'),
+        subPath('/*/*/*/*/*/*/*/**/')
+    ].reduce((total, current, index, array) => total.concat(current), []);
+    reverse && files.reverse();
+    return files;
+}
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\

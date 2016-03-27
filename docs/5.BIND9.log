@@ -90,7 +90,7 @@ nameserver 213.133.100.100
     # cd   # Optional
 
     Finally, add your nameservers to your domain provider :
-       * ns1.ahs502.ir with IP: 136.243.163.18 for ahs502.ir
-       * ns1.hesamhesab.ir with IP: 136.243.163.18 for hesamhesab.ir
+       * ns1.ahs502.ir with IP=136.243.163.18 for ahs502.ir
+       * ns1.hesamhesab.ir with IP=136.243.163.18 for hesamhesab.ir
 
     Now, you should wait a couple of hours or a day to see the results !
