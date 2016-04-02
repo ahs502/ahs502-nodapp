@@ -1,0 +1,50 @@
+> Enter root mode :
+
+	$ sudo -i
+
+> Install Node.js (v5.10.0 for now) :
+
+	# curl --silent --location https://deb.nodesource.com/setup_5.x | sudo bash -
+	# apt-get install -y nodejs
+
+> Install some deb packages :
+
+	# apt-get install -y nano mc build-essential
+
+> Install some npm packages :
+
+	# npm install -g gulp bower express express-generator
+
+> Setup SSH :
+
+	# ssh-keygen -t rsa -b 4096 -C "ahs502@gmail.com"
+	# eval "$(ssh-agent -s)"
+	# ssh-add ~/.ssh/id_rsa
+	# cat ~/.ssh/id_rsa.pub
+
+	Copy the key to your GitHub.com SSH Keys.
+
+> Setup git :
+
+	# apt-get update
+	# apt-get install -y git
+	# git config --global user.name "Hessam A Shokravi"
+	# git config --global user.email "ahs502@gmail.com"
+	# git config --list   # To check the results
+
+> Clone project :
+
+	# git clone git@github.com:ahs502/ahs502-nodapp.git
+
+> Install project packages :
+
+	# npm install
+	# sudo bower install --allow-root
+
+	Install semantic-ui using 'gulp install' in folder lib/semantic/ first,
+	Then, disable Google fonts like described earlier.
+
+> Setup bind9 as described before...
+
+> Setup Nginx as described before...
+

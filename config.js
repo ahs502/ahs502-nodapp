@@ -72,13 +72,13 @@ var config = {
     nodePort: 8081,
 
     /* Server IP address */
-    serverIp: "136.243.163.18",
+    serverIp: "176.9.194.237",
 
     /* dns :
     Bind9 name server configurations.
     First domain will be used for reverse zone.
-    Bu default we have :
-        ["ns1"] for ns,
+    By default we have :
+        At least ["ns1"] for ns,
         "mail" for mail,
         "host" for root and
         at least ["www"] for subdomains.
@@ -109,31 +109,31 @@ var config = {
 
         "hesamhesab.ir": {
             subdomains: ["www", "ide", "dev", "bs", "test"]
-        }
+        },
+
+        "mehrnoosh72.ir": {
+            subdomains: ["www", "ide", "dev", "bs", "test"]
+        },
+
+        "minush.ir": {
+            subdomains: ["www", "ide", "dev", "bs", "test"]
+        },
 
     },
 
     /*
     Nginx server configurations.
     You can proxy each domain (with any subdomains if you want) to a specified url.
-    The acceptable format is (by examples) :
+    The acceptable format is :
         {
-            "domain1.some": "http://localhost:8080",
-            "sub1.domain1.some1": "http://localhost:8081",
-            "sub2.domain1.some2": "http://localhost:8082",
-            "domain2.some3": "http://localhost:8082/path1",
-            "sub3.domain2.some3": "http://localhost:8082/path2",
-            "sub3.domain1.some1": {
-                "path3": "http://localhost:8086",
-                "/path4": "http://localhost:8087",
-                "path5": "http://localhost:8088/path6",
-                ...
-            },
+            "[subdomain].domain.ir[/some/path]": "somewhereelse",
             ...
         }
-    NOTE:   If you map 'domain.ir/zxc' to 'somewhereelse', then
-            a request to 'domain.ir/zxc' will be redirected to 'somewhereelse/zxc' ('/zxc' will not be discarded) and
-            a request to 'domain.ir/zxc/asd' will be redirected to 'somewhereelse/zxc/asd'.
+    where "somewhereelse" is something like "http://localhost:8081" or "http://localhost:8082/some/path".
+    NOTE:
+        If you map 'domain.ir/zxc' to 'somewhereelse', then
+        a request to 'domain.ir/zxc' will be redirected to 'somewhereelse/zxc' ('/zxc' will not be discarded) and
+        a request to 'domain.ir/zxc/asd' will be redirected to 'somewhereelse/zxc/asd'.
     */
     nginx: {
 
@@ -152,6 +152,20 @@ var config = {
         "bs.hesamhesab.ir": "http://localhost:8093",
         "test.hesamhesab.ir": "http://localhost:8094",
         "ide.hesamhesab.ir": "http://localhost:8080",
+
+        "mehrnoosh72.ir": "http://localhost:8011",
+        "www.mehrnoosh72.ir": "http://localhost:8011",
+        "dev.mehrnoosh72.ir": "http://localhost:8012",
+        "bs.mehrnoosh72.ir": "http://localhost:8013",
+        "test.mehrnoosh72.ir": "http://localhost:8014",
+        "ide.mehrnoosh72.ir": "http://localhost:8080",
+
+        "minush.ir": "http://localhost:8021",
+        "www.minush.ir": "http://localhost:8021",
+        "dev.minush.ir": "http://localhost:8022",
+        "bs.minush.ir": "http://localhost:8023",
+        "test.minush.ir": "http://localhost:8024",
+        "ide.minush.ir": "http://localhost:8080",
 
     }
 

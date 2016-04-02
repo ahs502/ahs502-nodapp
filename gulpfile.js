@@ -507,7 +507,10 @@ gulp.task('nginx', () => {
             src: true
         })
         .pipe(gulp.dest('/etc/nginx/sites-available/'))
-        .pipe(shell(["sudo nginx -s reload"], {
+        .pipe(shell([
+            "sudo service nginx start",
+            "sudo nginx -s reload"
+        ], {
             quiet: true
         }))
         .on('end', () => util.log(' => [' + 'nginx'.bold.yellow + '] ' + 'Route servers have been set.'.green));

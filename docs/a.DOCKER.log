@@ -1,0 +1,29 @@
+> Install docker-engine :
+
+    # apt-get update
+    # apt-get install -y apt-transport-https ca-certificates
+    # apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D
+    # echo "deb https://apt.dockerproject.org/repo ubuntu-wily main" > /etc/apt/sources.list.d/docker.list
+    # apt-get update
+    # apt-get purge lxc-docker   # Purge the old version of docker if exists
+    # apt-cache policy docker-engine   # Verify that APT is pulling from the right repository
+    # apt-get install linux-image-extra-$(uname -r)   # Recommended
+    # apt-get install -y docker-engine
+    
+    To start docker deamon :
+    # service docker start
+    
+    To verify that docker has been installed correctly :
+    # sudo docker run hello-world
+    
+    To configure the docker daemon to start on boot
+    # systemctl enable docker
+    
+    To upgrade docker engin :
+    # apt-get upgrade docker-engine
+    
+    To uninstall docker engine :
+    # apt-get purge docker-engine
+    # apt-get autoremove --purge docker-engine
+    # rm -rf /var/lib/docker   # As all your images, containers, volumes, or user created configuration files are here
+    
