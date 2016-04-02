@@ -5,8 +5,8 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var less = require('gulp-less');
 var cssnano = require('gulp-cssnano');
-var imagemin = require('gulp-imagemin');
-var sourcemaps = require('gulp-sourcemaps');
+//var imagemin = require('gulp-imagemin');
+//var sourcemaps = require('gulp-sourcemaps');
 var gprint = require('gulp-print');
 var rename = require("gulp-rename");
 var merge = require("merge-stream");
@@ -19,9 +19,13 @@ var runSequence = require('run-sequence');
 
 var path = require('path');
 var del = require('del');
-var colors = require('colors');
 var syncExec = require('sync-exec');
 var childProcess = require('child_process');
+
+/*var colors =*/
+require('colors');
+
+var bs, browserSync = require("browser-sync");
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -276,9 +280,82 @@ gulp.task('watch', callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+gulp.task('start', ['watch', 'start-node'], callback => {
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('start-app', ['build-app', 'watch', 'start-node'], callback => {
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
 gulp.task('default', ['build', 'watch', 'start-node'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
     callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('bs', ['watch', 'start-node'], () => {
+
+
+    bs = browserSync.create();
+
+    bs.init({
+        //proxy: "localhost:" + config.nodePort,
+        proxy: {
+            target: "localhost:" + config.nodePort,
+            ws: true,
+            middleware: function(req, res, next) {
+                console.log("-proxy-middleware:  ", req.url);
+                next();
+            }
+        },
+        port: 8082, // dev. ...
+        ui: {
+            port: 8083, // bs. ...
+            weinre: {
+                port: 8084 // test. ...
+            }
+        },
+        socket: {
+            // socketIoOptions: {
+            //     log: false
+            // },
+            // socketIoClientConfig: {
+            //     reconnectionAttempts: 50
+            // },
+            // path: "/browser-sync/socket.io",
+            // clientPath: "/browser-sync",
+            // namespace: "/browser-sync",
+            // clients: {
+            //     heartbeatTimeout: 5000
+            // },
+            domain: "www.ahs502.ir",
+            port: 80
+        },
+        middleware: function(req, res, next) {
+            console.log("-middleware:  ", req.url);
+            next();
+        },
+        online: true, // By-default it is online.
+        //TODO: open: ???,
+        //reloadDebounce: 1000,
+        injectChanges: false,
+        minify: false
+    });
+
+
+    gulp.watch("app/views/*.jade").on("change", bs.reload);
+
+
+
+
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -333,7 +410,6 @@ gulp.task('bind9', callback => {
             domain + ". IN MX 10 " + mail + "." + domain + ".\n" +
             domain + ". IN A " + ip + "\n" +
             "\n";
-
         subdomains.forEach(subdomain => db += subdomain + " IN " + resolver(subdomain) + "\n");
         zone_db[domain + ".db"] = db;
     }
@@ -398,21 +474,31 @@ gulp.task('nginx', () => {
     util.log(" -> [" + 'nginx'.yellow + "] Configuring nginx on your server...");
 
     var data = "",
-        routes = (config && config.nginx) || {};
+        routesAll = (config && config.nginx) || {};
 
-    for (var domain in routes) {
+    for (var domain in routesAll) {
+        var routes = routesAll[domain];
+        if ("string" === typeof routes)
+            routes = {
+                "/": routes
+            };
+
         data +=
             "server {\n" +
             "    listen 80;\n" +
-            "    server_name " + domain + ";\n" +
-            "    location / {\n" +
-            "        proxy_pass " + routes[domain] + ";\n" +
-            "        proxy_http_version 1.1;\n" +
-            "        proxy_set_header Upgrade $http_upgrade;\n" +
-            "        proxy_set_header Connection 'upgrade';\n" +
-            "        proxy_set_header Host $host;\n" +
-            "        proxy_cache_bypass $http_upgrade;\n" +
-            "    }\n" +
+            "    server_name " + domain + ";\n";
+        for (var route in routes) {
+            data +=
+                "    location " + ((route.slice(0, 1) != "/") ? ("/" + route) : route) + " {\n" +
+                "        proxy_pass " + routes[route] + ";\n" +
+                "        proxy_http_version 1.1;\n" +
+                "        proxy_set_header Upgrade $http_upgrade;\n" +
+                "        proxy_set_header Connection 'upgrade';\n" +
+                "        proxy_set_header Host $host;\n" +
+                "        proxy_cache_bypass $http_upgrade;\n" +
+                "    }\n";
+        }
+        data +=
             "}\n" +
             "\n";
     }

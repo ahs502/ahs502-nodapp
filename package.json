@@ -19,6 +19,7 @@
     "sync-exec": "^0.6.2"
   },
   "devDependencies": {
+    "browser-sync": "^2.11.2",
     "colors": "^1.1.2",
     "console-prompt": "^1.0.0",
     "del": "^2.2.0",

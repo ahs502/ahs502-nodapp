@@ -1,0 +1,4 @@
+> Install Browser-Sync :
+
+    # npm install --save-dev browser-sync
+

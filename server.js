@@ -24,10 +24,10 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
-// declare public folders
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(path.join(__dirname, 'app/dist')));
-app.use(express.static(path.join(__dirname, 'app/assets')));
+// declare static folders
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/dist', express.static(path.join(__dirname, 'app/dist')));
+app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
 
 // load route controllers
 + function extractRoutes(folder) {
