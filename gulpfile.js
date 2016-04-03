@@ -280,86 +280,6 @@ gulp.task('watch', callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('start', ['watch', 'start-node'], callback => {
-    util.log(" => Type 'gulp help' for more information.".bold);
-    callback(); // Nothing !
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-gulp.task('start-app', ['build-app', 'watch', 'start-node'], callback => {
-    util.log(" => Type 'gulp help' for more information.".bold);
-    callback(); // Nothing !
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-gulp.task('default', ['build', 'watch', 'start-node'], callback => {
-    util.log(" => Type 'gulp help' for more information.".bold);
-    callback(); // Nothing !
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-gulp.task('bs', ['watch', 'start-node'], () => {
-
-
-    bs = browserSync.create();
-
-    bs.init({
-        //proxy: "localhost:" + config.nodePort,
-        proxy: {
-            target: "localhost:" + config.nodePort,
-            ws: true,
-            middleware: function(req, res, next) {
-                console.log("-proxy-middleware:  ", req.url);
-                next();
-            }
-        },
-        port: 8082, // dev. ...
-        ui: {
-            port: 8083, // bs. ...
-            weinre: {
-                port: 8084 // test. ...
-            }
-        },
-        socket: {
-            // socketIoOptions: {
-            //     log: false
-            // },
-            // socketIoClientConfig: {
-            //     reconnectionAttempts: 50
-            // },
-            // path: "/browser-sync/socket.io",
-            // clientPath: "/browser-sync",
-            // namespace: "/browser-sync",
-            // clients: {
-            //     heartbeatTimeout: 5000
-            // },
-            domain: "www.ahs502.ir",
-            port: 80
-        },
-        middleware: function(req, res, next) {
-            console.log("-middleware:  ", req.url);
-            next();
-        },
-        online: true, // By-default it is online.
-        //TODO: open: ???,
-        //reloadDebounce: 1000,
-        injectChanges: false,
-        minify: false
-    });
-
-
-    gulp.watch("app/views/*.jade").on("change", bs.reload);
-
-
-
-
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
 gulp.task('bind9', callback => {
     var ip = config.serverIp || "11.22.33.44",
         dns = config.dns || {},
@@ -474,23 +394,27 @@ gulp.task('nginx', () => {
     util.log(" -> [" + 'nginx'.yellow + "] Configuring nginx on your server...");
 
     var data = "",
-        routesAll = (config && config.nginx) || {};
+        routesAll = (config && config.nginx) || {},
+        routes = {},
+        domain;
 
-    for (var domain in routesAll) {
-        var routes = routesAll[domain];
-        if ("string" === typeof routes)
-            routes = {
-                "/": routes
-            };
+    for (domain in routesAll) {
+        var refinedDomain = (domain.slice(-1) != '/' ? (domain + '/') : domain)
+        var domainName = refinedDomain.slice(0, refinedDomain.indexOf('/')).trim(),
+            domainPath = refinedDomain.slice(refinedDomain.indexOf('/')).trim();
+        routes[domainName] = routes[domainName] || {};
+        routes[domainName][domainPath] = routesAll[domain];
+    }
 
+    for (domain in routes) {
         data +=
             "server {\n" +
             "    listen 80;\n" +
             "    server_name " + domain + ";\n";
-        for (var route in routes) {
+        for (var route in routes[domain]) {
             data +=
-                "    location " + ((route.slice(0, 1) != "/") ? ("/" + route) : route) + " {\n" +
-                "        proxy_pass " + routes[route] + ";\n" +
+                "    location " + (route => ((route.slice(-1) != "/") ? (route + "/") : route))((route.slice(0, 1) != "/") ? ("/" + route) : route) + " {\n" +
+                "        proxy_pass " + (route => ((route.slice(-1) != "/") ? (route + "/") : route))(routes[domain][route]) + ";\n" +
                 "        proxy_http_version 1.1;\n" +
                 "        proxy_set_header Upgrade $http_upgrade;\n" +
                 "        proxy_set_header Connection 'upgrade';\n" +
@@ -514,6 +438,82 @@ gulp.task('nginx', () => {
             quiet: true
         }))
         .on('end', () => util.log(' => [' + 'nginx'.bold.yellow + '] ' + 'Route servers have been set.'.green));
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('browser-sync', ['nginx', 'start-node', 'watch'], callback => {
+    
+    bs = browserSync.create();
+    
+    bs.init({
+        proxy: {
+            target: "localhost:" + config.nodePort,
+            ws: true,
+            // middleware: function(req, res, next) {
+            //     console.log("-proxy-middleware:  ", req.url);
+            //     next();
+            // }
+        },
+        port: config.browserSync.localPort, // dev. ...
+        ui: {
+            port: config.browserSync.localPort + 2, // ui. ...
+            weinre: {
+                port: config.browserSync.localPort + 3 // weinre. ...
+            }
+        },
+        socket: {
+            // socketIoOptions: {
+            //     log: false
+            // },
+            // socketIoClientConfig: {
+            //     reconnectionAttempts: 50
+            // },
+            path: "/browser-sync/socket.io",
+            clientPath: "/browser-sync",
+            namespace: "/browser-sync",
+            // clients: {
+            //     heartbeatTimeout: 5000
+            // },
+            domain: config.browserSync.domains.dev,
+            // port: 80
+        },
+        // middleware: function(req, res, next) {
+        //     console.log("-middleware:  ", req.url);
+        //     next();
+        // },
+        online: true, // By-default it is online.
+        //TODO: open: ???,
+        reloadDebounce: 3000,
+        injectChanges: false,
+        minify: false
+    });
+
+    gulp.watch("app/views/*.jade").on("change", bs.reload);
+    //TODO: other watches ...
+    
+    callback();
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('start', ['watch', 'start-node'], callback => {
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('start-app', ['build-app', 'watch', 'start-node'], callback => {
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('default', ['build', 'watch', 'start-node'], callback => {
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\

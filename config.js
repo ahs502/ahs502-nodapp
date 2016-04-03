@@ -3,6 +3,7 @@ var config = {
     buildPaths: {
 
         lib: {
+            
             /* List of all javascript files of client-side modules */
             js: [
                 "./app/lib/angular/angular.min.js",
@@ -26,6 +27,7 @@ var config = {
         },
 
         app: {
+            
             /*
             The path containing *.js and *.coffee source code files.
             You can use arbitrary directory structure to manage source files.
@@ -69,7 +71,8 @@ var config = {
 
     },
 
-    nodePort: 8081,
+    /* Local port to run Node.js server on for development, 12345 by default */
+    nodePort: 8081, // 5 ports will be reserved (from nodePort to nodePort+4).
 
     /* Server IP address */
     serverIp: "176.9.194.237",
@@ -108,15 +111,15 @@ var config = {
         },
 
         "hesamhesab.ir": {
-            subdomains: ["www", "ide", "dev", "bs", "test"]
+            subdomains: ["www", "ide", "dev", "bs", "weinre", "test"]
         },
 
         "mehrnoosh72.ir": {
-            subdomains: ["www", "ide", "dev", "bs", "test"]
+            subdomains: ["www", "ide", "dev", "bs", "weinre", "test"]
         },
 
         "minush.ir": {
-            subdomains: ["www", "ide", "dev", "bs", "test"]
+            subdomains: ["www", "ide", "dev", "bs", "weinre", "test"]
         },
 
     },
@@ -126,50 +129,110 @@ var config = {
     You can proxy each domain (with any subdomains if you want) to a specified url.
     The acceptable format is :
         {
-            "[subdomain].domain.ir[/some/path]": "somewhereelse",
+            "[subdomain].domain.ir[/some/path]": "somewhereelse1",
+            ...
+            "[subdomain1].domain1.ir [subdomain2].domain2.ir [subdomain3].domain3.ir[/some/path]": "somewhereelse2",
             ...
         }
-    where "somewhereelse" is something like "http://localhost:8081" or "http://localhost:8082/some/path".
+    where "somewhereelse" is something like 
+        "http://localhost:8081" or
+        "http://localhost:8082/some/path/" (It is better when ends by '/') or
+        // "[browser-sync]:8085" (which aquire both ports 8085 and 8085+1=8086 on localhost).
     NOTE:
         If you map 'domain.ir/zxc' to 'somewhereelse', then
         a request to 'domain.ir/zxc' will be redirected to 'somewhereelse/zxc' ('/zxc' will not be discarded) and
         a request to 'domain.ir/zxc/asd' will be redirected to 'somewhereelse/zxc/asd'.
+        For 'domain.ir/some/path' it is the same to redirect it to 'somewhereelse' or 'somewhereelse/some/path'.
+    NOTE:
+        If you set just 'domain.ir' without any prefix or postfix, but do not set 'www.domain.ir' to anywhere,
+        then 'www.domain.ir' will be set automatically to 'domain.ir' by default.
     */
     nginx: {
 
-        "ahs502.ir": "http://localhost:8081",
-        "www.ahs502.ir": "http://localhost:8081",
-        // "dev.ahs502.ir": "http://localhost:8082",
-        "dev.ahs502.ir/zxc": "http://localhost:8011",
-        "dev.ahs502.ir/qwe": "http://localhost:8022",
-        "bs.ahs502.ir": "http://localhost:8083",
-        "test.ahs502.ir": "http://localhost:8084",
+        "ahs502.ir": "http://localhost:8011",
+        "test.ahs502.ir": "http://localhost:8019",
         "ide.ahs502.ir": "http://localhost:8080",
 
-        "hesamhesab.ir": "http://localhost:8091",
-        "www.hesamhesab.ir": "http://localhost:8091",
-        "dev.hesamhesab.ir": "http://localhost:8092",
-        "bs.hesamhesab.ir": "http://localhost:8093",
-        "test.hesamhesab.ir": "http://localhost:8094",
+        "hesamhesab.ir": "http://localhost:8021",
+        "test.hesamhesab.ir": "http://localhost:8029",
         "ide.hesamhesab.ir": "http://localhost:8080",
 
-        "mehrnoosh72.ir": "http://localhost:8011",
-        "www.mehrnoosh72.ir": "http://localhost:8011",
-        "dev.mehrnoosh72.ir": "http://localhost:8012",
-        "bs.mehrnoosh72.ir": "http://localhost:8013",
-        "test.mehrnoosh72.ir": "http://localhost:8014",
+        "mehrnoosh72.ir": "http://localhost:8031",
+        "test.mehrnoosh72.ir": "http://localhost:8039",
         "ide.mehrnoosh72.ir": "http://localhost:8080",
 
-        "minush.ir": "http://localhost:8021",
-        "www.minush.ir": "http://localhost:8021",
-        "dev.minush.ir": "http://localhost:8022",
-        "bs.minush.ir": "http://localhost:8023",
-        "test.minush.ir": "http://localhost:8024",
+        "minush.ir": "http://localhost:8041",
+        "test.minush.ir": "http://localhost:8049",
         "ide.minush.ir": "http://localhost:8080",
+
+    },
+
+    /*
+
+    */
+    browserSync: {
+
+        /* All fields are optional */
+        domains: {
+            dev: "dev.ahs502.ir", //: localPort & localPort+1
+            ui: "bs.ahs502.ir", //: localPort+2
+            weinre: "weinre.ahs502.ir", //: localPort+3
+        },
+
+        localPort: null, // By default = config.nodePort + 1
+
+        reloadDebounce: 3000 //By default = 1000
 
     }
 
 };
 
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+/*
+Set all default values
+*/
+
+config.nodePort = config.nodePort || 12345;
+
+config.dns = config.dns || {};
+
+config.nginx = config.nginx || {};
+
+config.browserSync = config.browserSync || {};
+config.browserSync.domains = config.browserSync.domains || {};
+config.browserSync.localPort = config.browserSync.localPort || (config.nodePort + 1);
+config.browserSync.reloadDebounce = config.browserSync.reloadDebounce || 1000;
+
+if (config.browserSync.domains.dev) {
+    config.nginx[config.browserSync.domains.dev] = "http://localhost:" + config.browserSync.localPort;
+    config.nginx[config.browserSync.domains.dev + "/browser-sync/socket.io"] =
+        "http://localhost:" + (config.browserSync.localPort + 1) + "/browser-sync/socket.io/";
+}
+if (config.browserSync.domains.ui) {
+    config.nginx[config.browserSync.domains.ui] = "http://localhost:" + (config.browserSync.localPort + 2);
+}
+if (config.browserSync.domains.weinre) {
+    config.nginx[config.browserSync.domains.weinre] = "http://localhost:" + (config.browserSync.localPort + 3);
+}
+
+for (var domain in config.dns) {
+    if ((domain in config.nginx) && !("www." + domain in config.nginx)) {
+        config.nginx[domain + " www." + domain] = config.nginx[domain];
+        delete config.nginx[domain];
+    }
+}
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 module.exports = config;
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
