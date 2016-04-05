@@ -14,8 +14,10 @@ app/lib/semantic/*
 !app/lib/semantic/src/
 !app/lib/semantic/semantic.json
 
-app/assets/audio/
-app/assets/video/
+app/assets/audio/*
+!app/assets/audio/README.md
+app/assets/video/*
+!app/assets/video/README.md
 
 *.csv
 *.dat

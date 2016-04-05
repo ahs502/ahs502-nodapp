@@ -3,7 +3,7 @@ var config = {
     buildPaths: {
 
         lib: {
-            
+
             /* List of all javascript files of client-side modules */
             js: [
                 "./app/lib/angular/angular.min.js",
@@ -27,7 +27,7 @@ var config = {
         },
 
         app: {
-            
+
             /*
             The path containing *.js and *.coffee source code files.
             You can use arbitrary directory structure to manage source files.
@@ -63,10 +63,24 @@ var config = {
             "./routes/**/*.coffee"
         ],
 
+        /*
+        Server-side codes & modules including *.js and &.coffee files.
+        You can use arbitrary directory structure to manage source files.
+        Coffee files will be compiled to corresponding javascript files within the same path.
+        */
+        src: "./src/",
+
+        /* Layouts and views including *.html/htm and *.jade files */
+        views: [
+            "./app/views/**/*.html",
+            "./app/views/**/*.htm",
+            "./app/views/**/*.jade"
+        ],
+
         /* Public contents */
         assets: [
-            "./app/assets/**/*.*",
-            "./public/**/*.*"
+            "./public/**/*.*",
+            "./app/assets/**/*.*"
         ]
 
     },
@@ -99,7 +113,7 @@ var config = {
             // ns: ["ns1"],
             // mail: "mail",
             // root: "host",
-            subdomains: ["www", "ide", "dev", "bs", "test"],
+            subdomains: ["www", "ide", "dev", "bs", "weinre", "test"],
             // data: {
             //     "ns1": "A",
             //     "mail": "A",
@@ -168,7 +182,9 @@ var config = {
     },
 
     /*
-
+    All browser-sync options, see: https://www.browsersync.io/docs/options/
+    Field 'domains' are custom and is being used to config test and ui
+        to optionally assined domains by nginx.
     */
     browserSync: {
 
@@ -179,10 +195,24 @@ var config = {
             weinre: "weinre.ahs502.ir", //: localPort+3
         },
 
-        localPort: null, // By default = config.nodePort + 1
+        port: null, // By default = config.nodePort + 1
 
-        reloadDebounce: 3000 //By default = 1000
+        /* Other options */
 
+        online: true,
+        //TODO: open: ???,
+        reloadDebounce: 3000,
+        reloadDelay: 0,
+        injectChanges: false,
+        minify: false,
+        ghostMode: {
+            clicks: true,
+            scroll: true,
+            forms: true
+        },
+        notify: true,
+        injectChanges: true, // For CSSes
+        // ...
     }
 
 };
@@ -205,19 +235,37 @@ config.nginx = config.nginx || {};
 
 config.browserSync = config.browserSync || {};
 config.browserSync.domains = config.browserSync.domains || {};
-config.browserSync.localPort = config.browserSync.localPort || (config.nodePort + 1);
-config.browserSync.reloadDebounce = config.browserSync.reloadDebounce || 1000;
+config.browserSync.port = config.browserSync.port || (config.nodePort + 1);
+
+config.browserSync.proxy = config.browserSync.proxy || {};
+config.browserSync.proxy.target = "localhost:" + config.nodePort;
+config.browserSync.proxy.ws = true;
+
+(config.browserSync.ui === undefined) && (config.browserSync.ui = {
+    port: config.browserSync.port + 2,
+    weinre: {
+        port: config.browserSync.port + 3
+    }
+});
+
+config.browserSync.socket = config.browserSync.socket || {};
+config.browserSync.socket.path = "/browser-sync/socket.io";
+config.browserSync.socket.clientPath = "/browser-sync";
+config.browserSync.socket.namespace = "/browser-sync";
+config.browserSync.socket.domain = config.browserSync.domains.dev;
 
 if (config.browserSync.domains.dev) {
-    config.nginx[config.browserSync.domains.dev] = "http://localhost:" + config.browserSync.localPort;
+    config.nginx[config.browserSync.domains.dev] = "http://localhost:" + config.browserSync.port;
     config.nginx[config.browserSync.domains.dev + "/browser-sync/socket.io"] =
-        "http://localhost:" + (config.browserSync.localPort + 1) + "/browser-sync/socket.io/";
+        "http://localhost:" + (config.browserSync.port + 1) + "/browser-sync/socket.io/";
 }
+
 if (config.browserSync.domains.ui) {
-    config.nginx[config.browserSync.domains.ui] = "http://localhost:" + (config.browserSync.localPort + 2);
+    config.nginx[config.browserSync.domains.ui] = "http://localhost:" + (config.browserSync.port + 2);
 }
+
 if (config.browserSync.domains.weinre) {
-    config.nginx[config.browserSync.domains.weinre] = "http://localhost:" + (config.browserSync.localPort + 3);
+    config.nginx[config.browserSync.domains.weinre] = "http://localhost:" + (config.browserSync.port + 3);
 }
 
 for (var domain in config.dns) {

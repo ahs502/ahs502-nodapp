@@ -204,6 +204,24 @@ gulp.task('build-lib', ['build-lib-js', 'build-lib-css']);
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+gulp.task('build-src', () =>
+    gulp.src(path.join(paths.src, '**/*.coffee'), {
+        base: paths.src
+    })
+    .pipe(gprint(file => ' -> [' + 'src'.magenta + '] Coffeescript file: ' + file))
+    .pipe(coffee({
+            bare: false // Each file in a separate IIFE scope
+        })
+        .on('error', error => {
+            util.log(error);
+            util.log("\nSTACK: ".red.bold + error.stack);
+        }))
+    .pipe(gprint(file => ' -> [' + 'src'.bold.magenta + '] ' + file + ' has been created.'))
+    .pipe(gulp.dest(paths.src))
+    .on('end', () => util.log(' => [' + 'src'.bold.cyan + '] ' + 'All server-side source files have been compiled.'.green)));
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
 gulp.task('build', ['clean'], () =>
     runSequence('build-lib', 'build-app')
 );
@@ -253,28 +271,6 @@ gulp.task('restart-node', callback => {
         runSequence('stop-node', 'start-node');
     else
         runSequence('start-node');
-    callback();
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-// gulp.task('restart-browser', () => {
-//     //TODO: Or use browsersync instead...
-// })
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-gulp.task('watch', callback => {
-
-    gulp.watch(path.join(paths.app.src, '**/*.js'), ['build-app-js' /*, 'restart-browser'*/ ]);
-    gulp.watch(path.join(paths.app.src, '**/*.coffee'), ['build-app-js' /*, 'restart-browser'*/ ]);
-    gulp.watch(path.join(paths.app.style, '**/*.css'), ['build-app-css' /*, 'restart-browser'*/ ]);
-    gulp.watch(path.join(paths.app.style, '**/*.less'), ['build-app-css' /*, 'restart-browser'*/ ]);
-
-    gulp.watch(paths.assets, [ /*'restart-browser'*/ ]);
-
-    gulp.watch(paths.routes, ['restart-node']);
-
     callback();
 });
 
@@ -420,6 +416,9 @@ gulp.task('nginx', () => {
                 "        proxy_set_header Connection 'upgrade';\n" +
                 "        proxy_set_header Host $host;\n" +
                 "        proxy_cache_bypass $http_upgrade;\n" +
+                "        # proxy_set_header X-Real-IP $remote_addr;\n" +
+                "        # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
+                "        # proxy_set_header X-Forwarded-Proto $scheme;\n" +
                 "    }\n";
         }
         data +=
@@ -442,76 +441,56 @@ gulp.task('nginx', () => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('browser-sync', ['nginx', 'start-node', 'watch'], callback => {
-    
-    bs = browserSync.create();
-    
-    bs.init({
-        proxy: {
-            target: "localhost:" + config.nodePort,
-            ws: true,
-            // middleware: function(req, res, next) {
-            //     console.log("-proxy-middleware:  ", req.url);
-            //     next();
-            // }
-        },
-        port: config.browserSync.localPort, // dev. ...
-        ui: {
-            port: config.browserSync.localPort + 2, // ui. ...
-            weinre: {
-                port: config.browserSync.localPort + 3 // weinre. ...
-            }
-        },
-        socket: {
-            // socketIoOptions: {
-            //     log: false
-            // },
-            // socketIoClientConfig: {
-            //     reconnectionAttempts: 50
-            // },
-            path: "/browser-sync/socket.io",
-            clientPath: "/browser-sync",
-            namespace: "/browser-sync",
-            // clients: {
-            //     heartbeatTimeout: 5000
-            // },
-            domain: config.browserSync.domains.dev,
-            // port: 80
-        },
-        // middleware: function(req, res, next) {
-        //     console.log("-middleware:  ", req.url);
-        //     next();
-        // },
-        online: true, // By-default it is online.
-        //TODO: open: ???,
-        reloadDebounce: 3000,
-        injectChanges: false,
-        minify: false
-    });
+gulp.task('watch', callback => {
 
-    gulp.watch("app/views/*.jade").on("change", bs.reload);
-    //TODO: other watches ...
-    
+    gulp.watch(path.join(paths.app.src, '**/*.js'), ['build-app-js']);
+    gulp.watch(path.join(paths.app.src, '**/*.coffee'), ['build-app-js']);
+    gulp.watch(path.join(paths.app.style, '**/*.css'), ['build-app-css']);
+    gulp.watch(path.join(paths.app.style, '**/*.less'), ['build-app-css']);
+
+    gulp.watch(path.join(paths.src, '**/*.coffee'), ['build-src']);
+    gulp.watch(path.join(paths.src, '**/*.js'), ['restart-node']);
+    gulp.watch(paths.routes, ['restart-node']);
+
     callback();
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('start', ['watch', 'start-node'], callback => {
+gulp.task('browser-sync', ['nginx'], callback => {
+
+    bs = browserSync.create("ahs502-nodapp-bs");
+    bs.init(config.browserSync);
+
+    gulp.watch(path.join(paths.dist, '*.min.js')).on("change", bs.reload);
+    gulp.watch(path.join(paths.dist, '*.min.css')).on("change", bs.reload); //TODO: Inject CSS
+
+    gulp.watch(paths.views).on("change", bs.reload);
+    gulp.watch(paths.assets).on("change", bs.reload);
+
+    gulp.watch(path.join(paths.src, '**/*.js')).on("change", bs.reload);
+    gulp.watch(paths.routes).on("change", bs.reload);
+
+    callback();
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('start', ['start-node', 'watch', 'browser-sync'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
     callback(); // Nothing !
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('start-app', ['build-app', 'watch', 'start-node'], callback => {
+gulp.task('start-app', ['build-app', 'start-node', 'watch', 'browser-sync'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
     callback(); // Nothing !
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('default', ['build', 'watch', 'start-node'], callback => {
+gulp.task('default', ['build', 'start-node', 'watch', 'browser-sync'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
     callback(); // Nothing !
 });
