@@ -1,5 +1,11 @@
 var config = {
 
+    /* Local port to run Node.js server on for development, 12345 by default */
+    nodePort: 8081, // 5 ports will be reserved (from nodePort to nodePort+4).
+
+    /* Server IP address */
+    serverIp: "176.9.194.237",
+
     buildPaths: {
 
         lib: {
@@ -84,12 +90,6 @@ var config = {
         ]
 
     },
-
-    /* Local port to run Node.js server on for development, 12345 by default */
-    nodePort: 8081, // 5 ports will be reserved (from nodePort to nodePort+4).
-
-    /* Server IP address */
-    serverIp: "176.9.194.237",
 
     /* dns :
     Bind9 name server configurations.
@@ -213,6 +213,7 @@ var config = {
         notify: true,
         injectChanges: true, // For CSSes
         // ...
+        
     }
 
 };

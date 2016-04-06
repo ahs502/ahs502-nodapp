@@ -223,8 +223,7 @@ gulp.task('build-src', () =>
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('build', ['clean'], () =>
-    runSequence('build-lib', 'build-app')
-);
+    runSequence('build-lib', 'build-app', 'build-src'));
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -460,18 +459,28 @@ gulp.task('watch', callback => {
 gulp.task('browser-sync', ['nginx'], callback => {
 
     bs = browserSync.create("ahs502-nodapp-bs");
-    bs.init(config.browserSync);
+    bs.init(config.browserSync, () => {
 
-    gulp.watch(path.join(paths.dist, '*.min.js')).on("change", bs.reload);
-    gulp.watch(path.join(paths.dist, '*.min.css')).on("change", bs.reload); //TODO: Inject CSS
+        gulp.watch([
+            path.join(paths.dist, paths.app.javascriptMinified),
+            path.join(paths.dist, paths.lib.javascriptMinified)
+        ]).on("change", bs.reload);
 
-    gulp.watch(paths.views).on("change", bs.reload);
-    gulp.watch(paths.assets).on("change", bs.reload);
+        gulp.watch(path.join(paths.dist, paths.app.stylesheetMinified))
+            .on("change", () => bs.reload(path.join(paths.dist, paths.app.stylesheetMinified)));
+            
+        gulp.watch(path.join(paths.dist, paths.lib.stylesheetMinified))
+            .on("change", () => bs.reload(path.join(paths.dist, paths.lib.stylesheetMinified)));
 
-    gulp.watch(path.join(paths.src, '**/*.js')).on("change", bs.reload);
-    gulp.watch(paths.routes).on("change", bs.reload);
+        gulp.watch(paths.views).on("change", bs.reload);
+        gulp.watch(paths.assets).on("change", bs.reload);
 
-    callback();
+        gulp.watch(path.join(paths.src, '**/*.js')).on("change", bs.reload);
+        gulp.watch(paths.routes).on("change", bs.reload);
+
+        callback();
+    });
+
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -483,7 +492,7 @@ gulp.task('start', ['start-node', 'watch', 'browser-sync'], callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('start-app', ['build-app', 'start-node', 'watch', 'browser-sync'], callback => {
+gulp.task('start-app', ['build-app', 'build-src', 'start-node', 'watch', 'browser-sync'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
     callback(); // Nothing !
 });
@@ -550,3 +559,79 @@ function appPath(basePath, extensions, reverse) {
 }
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// gulp.task('start-1', callback => {
+//     runSequence('build-app');
+//     util.log(" => Type 'gulp help' for more information.".bold);
+//     callback(); // Nothing !
+// });
+
+// //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+// gulp.task('start-2', ['start-1'], callback => {
+//     runSequence('build-src');
+//     util.log(" => Type 'gulp help' for more information.".bold);
+//     callback(); // Nothing !
+// });
+
+// //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+// gulp.task('start-3', ['start-2'], callback => {
+//     runSequence('start-node');
+//     util.log(" => Type 'gulp help' for more information.".bold);
+//     callback(); // Nothing !
+// });
+
+// //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+// gulp.task('start-4', ['start-3'], callback => {
+//     runSequence('watch');
+//     util.log(" => Type 'gulp help' for more information.".bold);
+//     callback(); // Nothing !
+// });
+
+// //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+// gulp.task('start-5', ['start-4'], callback => {
+//     runSequence('browser-sync');
+//     util.log(" => Type 'gulp help' for more information.".bold);
+//     callback(); // Nothing !
+// });
