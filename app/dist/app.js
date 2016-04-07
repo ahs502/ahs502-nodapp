@@ -4,7 +4,11 @@
 	AHS502 : Start of 'app/src/main.js'
 */
 
-// Client-side scripts ...
+/*global angular*/
+
+var app = angular.module('Nodapp', ['ui.router']);
+
+app.config([]);
 
 
 /*

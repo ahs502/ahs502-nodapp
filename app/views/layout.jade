@@ -1,14 +1,73 @@
 doctype html
 
-html
+block vars
 
-  block vars
-  
+- offline       = offline       || false;             // Load offline-cache.appcache for this site ?
+- webappCapable = webappCapable || offline;
+- title         = title         || "AHS502";
+- ngApp         = ngApp         || "";
+- ngController  = ngController  || "MasterController";
+- lang          = lang          || "en";
+
+- viewportWidth         = viewportWidth         || "device-width";
+- viewportInitialScale  = viewportInitialScale  || 1;
+- viewportMaximumScale  = viewportMaximumScale  || 1;
+- viewportUserScalable  = viewportUserScalable  || "no";
+
+- msTileColor = msTileColor || "#FFF";
+- msName      = msName      || title;
+- msTooltip   = msTooltip   || msName;
+
+if offline
+  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}" manifest="offline-cache.appcache")
+else
+  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}")
+
   head
-  
+    
     title= title
-    // link(rel='stylesheet', href='/dist/lib.min.css')
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=#{viewportWidth}, initial-scale=#{viewportInitialScale}, maximum-scale=#{viewportMaximumScale}, user-scalable=#{viewportUserScalable}")
+    
+    link(rel="apple-touch-icon" href="/assets/icon/apple-touch-icon.png")
+    link(rel="shortcut icon" href="/assets/icon/shortcut-icon.png")
+    
+    if webappCapable
+      meta(name="apple-mobile-web-app-capable" content="yes")
+      meta(name="mobile-web-app-capable" content="yes")
+      
+      // Android pin to start
+      
+      link(rel="manifest" href="android-manifest.json")
+      
+    // WindowsPhone pin to start
+    // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
+      
+    meta(name='msapplication-TileColor', content=msTileColor)
+    meta(name='msapplication-TileImage', content='/assets/icon/flower-icon.png')
+    meta(name='msapplication-config', content='none')
+    meta(name='application-name', content=msName)
+    meta(name='msapplication-tooltip', content=msTooltip)
+    meta(name='msapplication-square70x70logo', content='/assets/icon/pin-icon_70x70.png')
+    meta(name='msapplication-square150x150logo', content='/assets/icon/pin-icon_150x150.png')
+    meta(name='msapplication-square310x310logo', content='/assets/icon/pin-icon_310x310.png')
+    meta(name='msapplication-wide310x150logo', content='/assets/icon/pin-icon_310x150.png')
+
+    <!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    link(rel='stylesheet', href='/dist/lib.min.css')
     link(rel='stylesheet', href='/dist/app.min.css')
     
+    block head
+    
   body
-    block content
+    
+    block body
+
+    script(src='/dist/lib.min.js')
+    script(src='/dist/app.min.js')
+    
+    block views
+    

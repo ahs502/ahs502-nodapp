@@ -1,1 +1,1 @@
-Put your image & icon files here !
+Put your image files here !

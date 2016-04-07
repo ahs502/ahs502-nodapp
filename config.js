@@ -213,7 +213,7 @@ var config = {
         notify: true,
         injectChanges: true, // For CSSes
         // ...
-        
+
     }
 
 };
@@ -269,10 +269,20 @@ if (config.browserSync.domains.weinre) {
     config.nginx[config.browserSync.domains.weinre] = "http://localhost:" + (config.browserSync.port + 3);
 }
 
-for (var domain in config.dns) {
-    if ((domain in config.nginx) && !("www." + domain in config.nginx)) {
-        config.nginx[domain + " www." + domain] = config.nginx[domain];
-        delete config.nginx[domain];
+var allDomains = Object.keys(config.nginx)
+    .map(dd => dd.split(' ').filter(d => d != ''))
+    .reduce((previousValue, currentValue, currentIndex, array) => previousValue.concat(currentValue), []),
+    domain, domainKey;
+
+for (domain in config.dns) {
+    if ((allDomains.indexOf(domain) >= 0) && !(allDomains.indexOf("www." + domain) >= 0)) {
+        for (domainKey in config.nginx) {
+            if (domainKey.split(' ').indexOf(domain) >= 0) {
+                config.nginx[domainKey + " www." + domain] = config.nginx[domainKey];
+                delete config.nginx[domainKey];
+                break;
+            }
+        }
     }
 }
 

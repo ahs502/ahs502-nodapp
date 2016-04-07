@@ -1,0 +1,32 @@
+CACHE MANIFEST
+# Flower WebApp
+# Cache manifest version 0.0.2
+
+# main
+index.html
+app-manifest.json
+cache.appcache
+
+# app
+app/css/main.css
+app/js/main.js
+
+# asset
+asset/css/semantic.min.css
+asset/icon/android-icon.png
+asset/icon/apple-touch-icon.png
+asset/icon/shortcut-icon.png
+asset/icon/pin-icon_70x70.png
+asset/icon/pin-icon_150x150.png
+asset/icon/pin-icon_310x310.png
+asset/icon/pin-icon_310x150.png
+asset/img/flower-icon.png
+asset/js/angular.js
+asset/js/angular.min.js
+asset/js/angular-ui-router.min.js
+asset/js/jquery.min.js
+asset/js/semantic.min.js
+
+NETWORK:
+# All URLs that start with the following lines are whitelisted.
+
