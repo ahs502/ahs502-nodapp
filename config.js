@@ -91,6 +91,73 @@ var config = {
 
     },
 
+    /*
+    Configuration for serving meta info aboute web app.
+    */
+    meta: {
+
+        /* Rul prefix to serve meta info under it, by default is 'meta' */
+        urlPrefix: 'meta',
+
+        /* Settings needed to serve HTML5 offline cache manifest file */
+        offlineCache: {
+
+            cacheManifestFile: 'cache-manifest.appcache', // By default is 'cache-manifest.appcache'
+
+            /*
+            CACHE part folders, all files within them are included.
+            Each item has this format :
+                [
+                    'path/to/folder1',
+                    ...
+                    ['path/to/folder2', 'url/prefix2'],
+                    ...
+                    ['path/to/folder2', 'url/prefix2', ignore, replace],
+                    ...
+                ]
+            where:
+                'url/prefix2' by default is 'path/to/folder2' itself,
+                ignore: file => someBoolean(file)   //OPTIONAL: Filter files by their absolute path
+                replace: url => someString(url)     //OPTIONAL: Modify urls of selected files
+            By default is [].
+            */
+            folders: [
+                ['app/assets/icon', 'assets/icon'],
+                ['app/assets/img', 'assets/img'],
+            ],
+
+            /*
+            CACHE part files.
+            Each item has this format :
+                [
+                    'some/path/to/file',
+                    ...
+                    ['some/path/to/other/file', 'url/instead/of/path/to/that/file'],
+                    ...
+                ]
+            By default is [].
+            */
+            files: [
+                ['app/dist/lib.min.css', 'dist/lib.min.css'],
+                ['app/dist/lib.min.js', 'dist/lib.min.js'],
+                ['app/dist/app.min.css', 'dist/app.min.css'],
+                ['app/dist/app.min.js', 'dist/app.min.js'],
+            ],
+
+            /* NETWORK entries, by default is ['*'] */
+            // networks: [],
+
+            /* FALLBACK entries, by default is [] */
+            // fallbacks: []
+
+        },
+
+        manifest: {
+            //TODO: ...
+        }
+
+    },
+
     /* dns :
     Bind9 name server configurations.
     First domain will be used for reverse zone.
@@ -228,11 +295,43 @@ var config = {
 Set all default values
 */
 
+var temp, i;
+
 config.nodePort = config.nodePort || 12345;
 
 config.dns = config.dns || {};
 
 config.nginx = config.nginx || {};
+
+config.meta.urlPrefix = config.meta.urlPrefix || 'meta';
+config.meta.offlineCache.cacheManifestFile = config.meta.offlineCache.cacheManifestFile || 'cache-manifest.appcache';
+config.meta.offlineCache.folders = config.meta.offlineCache.folders || [];
+config.meta.offlineCache.files = config.meta.offlineCache.files || [];
+config.meta.offlineCache.networks = config.meta.offlineCache.networks || ['*'];
+config.meta.offlineCache.fallbacks = config.meta.offlineCache.fallbacks || [];
+
+temp = [];
+config.meta.offlineCache.folders.forEach(folder => {
+    if (typeof folder === "string") {
+        temp.push([folder, folder, null, null]);
+    }
+    else if (typeof folder === "object") {
+        temp.push([folder[0], folder[1] || folder[0], folder[2] || null, folder[3] || null]);
+    }
+});
+config.meta.offlineCache.folders = temp;
+
+temp = [];
+config.meta.offlineCache.files.forEach(file => {
+    if (typeof file === "string") {
+        temp.push([file, file]);
+    }
+    else if (typeof file === "object") {
+        temp.push([file[0], file[1] || file[0]]);
+    }
+});
+config.meta.offlineCache.files = temp;
+
 
 config.browserSync = config.browserSync || {};
 config.browserSync.domains = config.browserSync.domains || {};

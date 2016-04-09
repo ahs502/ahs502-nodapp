@@ -1,0 +1,4 @@
+> Install some npm packages :
+
+    # npm install --save async fs-extra
+

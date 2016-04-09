@@ -2,7 +2,7 @@ doctype html
 
 block vars
 
-- offline       = offline       || false;             // Load offline-cache.appcache for this site ?
+- offline       = offline       || false;             // Load '/meta/cache-manifest.appcache' for this site ?
 - webappCapable = webappCapable || offline;
 - title         = title         || "AHS502";
 - ngApp         = ngApp         || "";
@@ -19,7 +19,7 @@ block vars
 - msTooltip   = msTooltip   || msName;
 
 if offline
-  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}" manifest="offline-cache.appcache")
+  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}" manifest="/meta/cache-manifest.appcache")
 else
   html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}")
 
