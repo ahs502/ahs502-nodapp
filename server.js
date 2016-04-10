@@ -26,6 +26,18 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
+app.use('/', (req, res, next) => {
+    if (!res._render_) {
+        res._render_ = res.render;
+        res.render = (viewPath, parameters) => {
+            parameters = parameters || {};
+            parameters.config = config;
+            res._render_(viewPath, parameters);
+        };
+    }
+    next();
+});
+
 // declare static folders
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use('/dist', express.static(path.join(__dirname, 'app/dist')));
