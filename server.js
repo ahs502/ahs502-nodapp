@@ -113,13 +113,7 @@ module.exports = app;
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-    // For test purposes :
-    //metaCacheManifestHandler(config.meta.offlineCache);
-
-function metaCacheManifestHandler(options) {
-
-    // For test purposes :
-    //return generateListOfCacheItems((err, items) => console.log(String(err).red + '\n', JSON.stringify(items, null, 4)));
+function metaCacheManifestHandler(options /* Most likely is config.meta.offlineCache */ ) {
 
     return (req, res, next) =>
         generateCacheManifest((err, cacheManifest) => {
@@ -162,6 +156,7 @@ function metaCacheManifestHandler(options) {
     function generateListOfCacheItems(callback /*(err, cacheItems, lastModifiedTime)*/ ) {
         var folders = options.folders,
             files = options.files,
+            deps = options.deps,
             cacheItems = [],
             lastModifiedTime = 0,
             modifiedTime,
@@ -172,10 +167,18 @@ function metaCacheManifestHandler(options) {
                 url = file[1];
             url = path.join('/', url);
             cacheItems.indexOf(url) < 0 && cacheItems.push(url);
-            modifiedTime = fs.statSync(place).mtime;
-            lastModifiedTime = lastModifiedTime > modifiedTime ? lastModifiedTime : modifiedTime;
+            try {
+                modifiedTime = fs.statSync(place).mtime;
+                lastModifiedTime = lastModifiedTime > modifiedTime ? lastModifiedTime : modifiedTime;
+            }
+            catch (err) {}
         });
 
+        deps.forEach(dep => walkSync(dep, null, (file, stat) => {
+            lastModifiedTime = lastModifiedTime > stat.mtime ? lastModifiedTime : stat.mtime;
+        }, null));
+
+        //TODO: Bad implementation, use my walkSync instead !
         function walkFolder(index, callback /*(err)*/ ) {
             if (index >= folders.length) {
                 callback && callback(null);
@@ -189,7 +192,7 @@ function metaCacheManifestHandler(options) {
                 fs.walk(folder)
                     .on('data', item => {
                         if (callback &&
-                            item.stats.nlink == 1 &&
+                            item.stats.isFile() &&
                             (!ignore || !ignore(item.path))) {
                             var itemPath = item.path.indexOf(cwd) === 0 ? item.path.slice(cwd.length) : item.path;
                             folder = path.join('/', folder);
@@ -221,3 +224,93 @@ function metaCacheManifestHandler(options) {
 
 }
 
+function walkSync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file, stat)*/ , decide /*(folder, stat):expand?*/ ) /*Returns array of {err, path}*/ {
+    var errors = [];
+    try {
+        var stat = fs.statSync(path);
+        if (stat.isFile()) {
+            callbackFile && callbackFile(path, stat);
+        }
+        else if (stat.isDirectory()) {
+            callbackFolder && callbackFolder(path, stat);
+            if (!decide || (typeof decide != "function") || decide(path, stat)) {
+                var subs = fs.readdirSync(path);
+                subs && (subs.length > 0) && subs.forEach(sub => errors = errors.concat(walkSync(path + '/' + sub, callbackFolder, callbackFile, decide)));
+            }
+        }
+        // See: https://nodejs.org/api/fs.html#fs_class_fs_stats
+    }
+    catch (err) {
+        errors.push({
+            err: err,
+            path: path
+        });
+    }
+    return errors;
+}
+
+// function walkAsync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file, stat)*/ , callbackEnd /*(Array of {err, path})*/ , decide /*(folder, stat, expand*/ ) {
+//     var errors = [],
+//     callbackEndWrapped = errs => {
+//         try {
+//             (typeof callbackEnd === "function") && callbackEnd(errs);
+//         }
+//         catch (err) {}
+//     };
+//     fs.stat(path, (err, stat) => {
+//         try {
+//             if (err) throw err;
+//             //: stat
+//             if (stat.isFile()) {
+//                 callbackFile && callbackFile(path, stat);
+//                 callbackEndWrapped(errors);// errors should be []
+//             }
+//             else if (stat.isDirectory()) {
+//                 callbackFolder && callbackFolder(path, stat);
+//                 var expand = () => {
+//                     fs.readdir(path, (err, subs) => {
+//                         try {
+//                             if (err) throw err;
+//                             if (subs && subs.length > 0) {
+//                                 //: subs
+//                                 (function subWalk(index) {
+//                                     if (index >= subs.length) {
+//                                         return callbackEndWrapped(errors);
+//                                     }
+//                                     var subPath = path + '/' + subs[index];
+//                                     walkAsync(subPath, callbackFolder, callbackFile, subErrors => {
+//                                         errors = errors.concat(subErrors);
+//                                         subWalk(index + 1);
+//                                     }, decide);
+//                                 })(0);
+//                             }
+//                         }
+//                         catch (error) {
+//                             errors.push({
+//                                 err: error,
+//                                 path: path
+//                             });
+//                             callbackEndWrapped(errors);
+//                         }
+//                     });
+//                 };
+//                 if (typeof decide === "function") {
+//                     decide(path, stat, expand);
+//                 }
+//                 else {
+//                     expand();
+//                 }
+//             }
+//             // See: https://nodejs.org/api/fs.html#fs_class_fs_stats
+//         }
+//         catch (error) {
+//             errors.push({
+//                 err: error,
+//                 path: path
+//             });
+//             (typeof callbackEndWrapped === "function") && callbackEndWrapped(errors);
+//         }
+//     });
+// }
+
+// walkAsync('.', (d, s) => console.log('>>', d), (f, s) => console.log('--', f), errs => console.log("ERRORS =", errs) , (d, s, expand) => ((d.indexOf('node_modules') < 0) &&(d.indexOf('/.') < 0) && expand()) );

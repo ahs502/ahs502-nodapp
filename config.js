@@ -105,7 +105,7 @@ var config = {
             cacheManifestFile: 'cache-manifest.appcache', // By default is 'cache-manifest.appcache'
 
             /*
-            CACHE part folders, all files within them are included.
+            CACHE part for folders, all files within them are included.
             Each item has this format :
                 [
                     'path/to/folder1',
@@ -117,8 +117,8 @@ var config = {
                 ]
             where:
                 'url/prefix2' by default is 'path/to/folder2' itself,
-                ignore: file => someBoolean(file)   //OPTIONAL: Filter files by their absolute path
-                replace: url => someString(url)     //OPTIONAL: Modify urls of selected files
+                ignore: file => someBooleanFrom(file)   //OPTIONAL: Filter files by their absolute path
+                replace: url => someStringFrom(url)     //OPTIONAL: Modify urls of selected files
             By default is [].
             */
             folders: [
@@ -127,10 +127,10 @@ var config = {
             ],
 
             /*
-            CACHE part files.
+            CACHE part for files and links.
             Each item has this format :
                 [
-                    'some/path/to/file',
+                    'some/path/to/a/file/or/custom/url',
                     ...
                     ['some/path/to/other/file', 'url/instead/of/path/to/that/file'],
                     ...
@@ -138,10 +138,27 @@ var config = {
             By default is [].
             */
             files: [
-                ['app/dist/lib.min.css', 'dist/lib.min.css'],
-                ['app/dist/lib.min.js', 'dist/lib.min.js'],
-                ['app/dist/app.min.css', 'dist/app.min.css'],
-                ['app/dist/app.min.js', 'dist/app.min.js'],
+                'dist/lib.min.css',
+                'dist/lib.min.js',
+                'dist/app.min.css',
+                'dist/app.min.js',
+            ],
+
+            /*
+            List of files/folders which last editing time depends on them.
+            Some are not necessary if you cover them in folders or files part.
+            By default is [].
+            */
+            deps: [
+                'app/assets',
+                'app/dist',
+                'app/views',
+                'bin/start',
+                'routes',
+                'src',
+                'config.js',
+                'server.js',
+                'package.json',
             ],
 
             /* NETWORK entries, by default is ['*'] */
@@ -307,6 +324,7 @@ config.meta.urlPrefix = config.meta.urlPrefix || 'meta';
 config.meta.offlineCache.cacheManifestFile = config.meta.offlineCache.cacheManifestFile || 'cache-manifest.appcache';
 config.meta.offlineCache.folders = config.meta.offlineCache.folders || [];
 config.meta.offlineCache.files = config.meta.offlineCache.files || [];
+config.meta.offlineCache.deps = config.meta.offlineCache.deps || [];
 config.meta.offlineCache.networks = config.meta.offlineCache.networks || ['*'];
 config.meta.offlineCache.fallbacks = config.meta.offlineCache.fallbacks || [];
 
@@ -331,7 +349,6 @@ config.meta.offlineCache.files.forEach(file => {
     }
 });
 config.meta.offlineCache.files = temp;
-
 
 config.browserSync = config.browserSync || {};
 config.browserSync.domains = config.browserSync.domains || {};
