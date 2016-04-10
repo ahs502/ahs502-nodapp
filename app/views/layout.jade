@@ -4,9 +4,9 @@ block vars
 
 - offline       = offline       || false;             // Load '/meta/cache-manifest.appcache' for this site ?
 - webappCapable = webappCapable || offline;
-- title         = title         || "AHS502";
-- ngApp         = ngApp         || "";
-- ngController  = ngController  || "MasterController";
+- title         = title         || config.meta.manifest.options.short_name;
+- ngApp         = ngApp         || undefined;
+- ngController  = ngController  || undefined;
 - lang          = lang          || "en";
 
 - viewportWidth         = viewportWidth         || "device-width";
@@ -14,14 +14,17 @@ block vars
 - viewportMaximumScale  = viewportMaximumScale  || 1;
 - viewportUserScalable  = viewportUserScalable  || "no";
 
-- msTileColor = msTileColor || "#FFF";
+- msTileColor = msTileColor || config.meta.manifest.options.background_color  || "#FFF";
 - msName      = msName      || title;
-- msTooltip   = msTooltip   || msName;
+- msTooltip   = msTooltip   || config.meta.manifest.options.name              || msName;
 
-if offline
-  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}" manifest="/meta/cache-manifest.appcache")
-else
-  html(lang="#{lang}" ng-app="#{ngApp}" ng-controller="#{ngController}")
+- htmlAttrs               = htmlAttrs               || {};
+- htmlAttrs.lang          = htmlAttrs.lang          || lang;
+- htmlAttrs.ngApp         = htmlAttrs.ngApp         || ngApp;
+- htmlAttrs.ngController  = htmlAttrs.ngController  || ngController;
+- htmlAttrs.manifest      = htmlAttrs.manifest      || (offline ? "/meta/cache-manifest.appcache" : undefined);
+
+html()&attributes(htmlAttrs)
 
   head
     
@@ -38,13 +41,13 @@ else
       
       // Android pin to start
       
-      link(rel="manifest" href="android-manifest.json")
+      link(rel="manifest" href="/meta/android-manifest.json")
       
     // WindowsPhone pin to start
     // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
       
     meta(name='msapplication-TileColor', content=msTileColor)
-    meta(name='msapplication-TileImage', content='/assets/icon/flower-icon.png')
+    meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
     meta(name='msapplication-config', content='none')
     meta(name='application-name', content=msName)
     meta(name='msapplication-tooltip', content=msTooltip)

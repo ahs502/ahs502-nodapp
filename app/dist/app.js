@@ -6,9 +6,9 @@
 
 /*global angular*/
 
-var app = angular.module('Nodapp', ['ui.router']);
+// var app = angular.module('Nodapp', ['ui.router']);
 
-app.config([]);
+// app.config([]);
 
 
 /*

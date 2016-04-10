@@ -34,6 +34,8 @@ app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
 // setup meta server
 app.use(path.join('/', config.meta.urlPrefix, config.meta.offlineCache.cacheManifestFile),
     metaCacheManifestHandler(config.meta.offlineCache));
+app.use(path.join('/', config.meta.urlPrefix, config.meta.manifest.manifestFile),
+    metaAndroidManifestHandler(config.meta.manifest.options));
 
 // load route controllers
 + function extractRoutes(folder) {
@@ -314,3 +316,14 @@ function walkSync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file
 // }
 
 // walkAsync('.', (d, s) => console.log('>>', d), (f, s) => console.log('--', f), errs => console.log("ERRORS =", errs) , (d, s, expand) => ((d.indexOf('node_modules') < 0) &&(d.indexOf('/.') < 0) && expand()) );
+
+function metaAndroidManifestHandler(options /* Most likely is config.meta.manifest.options */ ) {
+
+    return (req, res, next) => {
+        var manifest = JSON.stringify(options, null, 4) + '\n';
+        res.statusCode = 200;
+        res.setHeader('content-length', Buffer.byteLength(manifest));
+        res.end(manifest);
+    };
+
+}

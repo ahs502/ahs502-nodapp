@@ -142,6 +142,9 @@ var config = {
                 'dist/lib.min.js',
                 'dist/app.min.css',
                 'dist/app.min.js',
+                'meta/cache-manifest.appcache',
+                'meta/android-manifest.json',
+                '/',
             ],
 
             /*
@@ -153,10 +156,12 @@ var config = {
                 'app/assets',
                 'app/dist',
                 'app/views',
-                'bin/start',
+                'bin',
+                'public',
                 'routes',
                 'src',
                 'config.js',
+                'gulpfile.js',
                 'server.js',
                 'package.json',
             ],
@@ -170,8 +175,27 @@ var config = {
         },
 
         manifest: {
-            //TODO: ...
-        }
+
+            manifestFile: 'android-manifest.json', // By default is 'android-manifest.json'
+
+            /* Installable webapp on android options */
+            options: {
+
+                name: "AHS502-Nodapp Installable WebApp",
+                short_name: "AHS502-Nodapp",
+                icons: [{
+                    src: "assets/icon/android-icon.png",
+                    sizes: "128x128",
+                    type: "image/png"
+                }],
+                start_url: "index.html",
+                display: "fullscreen",
+                orientation: "any",
+                background_color: "white",
+
+            }
+
+        },
 
     },
 
