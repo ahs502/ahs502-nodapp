@@ -26,6 +26,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 
+// auto-inject config into all jade layouts
 app.use('/', (req, res, next) => {
     if (!res._render_) {
         res._render_ = res.render;
@@ -48,6 +49,13 @@ app.use(path.join('/', config.meta.urlPrefix, config.meta.offlineCache.cacheMani
     metaCacheManifestHandler(config.meta.offlineCache));
 app.use(path.join('/', config.meta.urlPrefix, config.meta.manifest.manifestFile),
     metaAndroidManifestHandler(config.meta.manifest.options));
+
+// add the ability to set the listen path for express's routers
+express.RouterFor = function(routeBase,options){
+    var router=express.Router(options);
+    router.routeBase=routeBase;
+    return router;
+};
 
 // load route controllers
 + function extractRoutes(folder) {

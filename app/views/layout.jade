@@ -2,7 +2,7 @@ doctype html
 
 block vars
 
-- offline       = offline       || false;             // Load '/meta/cache-manifest.appcache' for this site ?
+- offline       = offline       || false;             // Load HTML5 cache-manifest for this site ?
 - webappCapable = webappCapable || offline;
 - title         = title         || config.meta.manifest.options.short_name;
 - ngApp         = ngApp         || undefined;
@@ -18,11 +18,14 @@ block vars
 - msName      = msName      || title;
 - msTooltip   = msTooltip   || config.meta.manifest.options.name              || msName;
 
+- cacheManifestUrl    = '/' + config.meta.urlPrefix + '/' + config.meta.offlineCache.cacheManifestFile;
+- androidManifestUrl  = '/' + config.meta.urlPrefix + '/' + config.meta.manifest.manifestFile;
+
 - htmlAttrs               = htmlAttrs               || {};
 - htmlAttrs.lang          = htmlAttrs.lang          || lang;
 - htmlAttrs.ngApp         = htmlAttrs.ngApp         || ngApp;
 - htmlAttrs.ngController  = htmlAttrs.ngController  || ngController;
-- htmlAttrs.manifest      = htmlAttrs.manifest      || (offline ? "/meta/cache-manifest.appcache" : undefined);
+- htmlAttrs.manifest      = htmlAttrs.manifest      || (offline ? cacheManifestUrl : undefined);
 
 html()&attributes(htmlAttrs)
 
@@ -41,11 +44,11 @@ html()&attributes(htmlAttrs)
       
       // Android pin to start
       
-      link(rel="manifest" href="/meta/android-manifest.json")
+      link(rel="manifest")&attributes({href: androidManifestUrl})
       
     // WindowsPhone pin to start
     // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
-      
+    
     meta(name='msapplication-TileColor', content=msTileColor)
     meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
     meta(name='msapplication-config', content='none')

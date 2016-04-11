@@ -1,6 +1,4 @@
-var router = require('express').Router();
-
-// router.routeBase = '/';
+var router = require('express').Router(); // or .RouterFor('/')
 
 ///////////////////////////////////////////////////////////////
 
