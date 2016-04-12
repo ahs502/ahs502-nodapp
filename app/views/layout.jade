@@ -9,14 +9,16 @@ block vars
 - ngController  = ngController  || undefined;
 - lang          = lang          || "en";
 
-- viewportWidth         = viewportWidth         || "device-width";
-- viewportInitialScale  = viewportInitialScale  || 1;
-- viewportMaximumScale  = viewportMaximumScale  || 1;
-- viewportUserScalable  = viewportUserScalable  || "no";
+- viewport              = viewport              || {};
+- viewport.width        = viewport.width        || config.meta.viewport.width;
+- viewport.initialScale = viewport.initialScale || config.meta.viewport.initialScale;
+- viewport.maximumScale = viewport.maximumScale || config.meta.viewport.maximumScale;
+- viewport.userScalable = viewport.userScalable || config.meta.viewport.userScalable;
 
-- msTileColor = msTileColor || config.meta.manifest.options.background_color  || "#FFF";
-- msName      = msName      || title;
-- msTooltip   = msTooltip   || config.meta.manifest.options.name              || msName;
+- ms            = ms            || {};
+- ms.tileColor  = ms.tileColor  || config.meta.manifest.options.background_color  || "#FFF";
+- ms.name       = ms.name       || title;
+- ms.tooltip    = ms.tooltip    || config.meta.manifest.options.name              || ms.name;
 
 - cacheManifestUrl    = '/' + config.meta.urlPrefix + '/' + config.meta.offlineCache.cacheManifestFile;
 - androidManifestUrl  = '/' + config.meta.urlPrefix + '/' + config.meta.manifest.manifestFile;
@@ -33,7 +35,7 @@ html()&attributes(htmlAttrs)
     
     title= title
     meta(charset="utf-8")
-    meta(name="viewport" content="width=#{viewportWidth}, initial-scale=#{viewportInitialScale}, maximum-scale=#{viewportMaximumScale}, user-scalable=#{viewportUserScalable}")
+    meta(name="viewport" content="width=#{viewport.width}, initial-scale=#{viewport.initialScale}, maximum-scale=#{viewport.maximumScale}, user-scalable=#{viewport.userScalable}")
     
     link(rel="apple-touch-icon" href="/assets/icon/apple-touch-icon.png")
     link(rel="shortcut icon" href="/assets/icon/shortcut-icon.png")
@@ -49,11 +51,11 @@ html()&attributes(htmlAttrs)
     // WindowsPhone pin to start
     // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
     
-    meta(name='msapplication-TileColor', content=msTileColor)
+    meta(name='msapplication-TileColor', content=ms.tileColor)
     meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
     meta(name='msapplication-config', content='none')
-    meta(name='application-name', content=msName)
-    meta(name='msapplication-tooltip', content=msTooltip)
+    meta(name='application-name', content=ms.name)
+    meta(name='msapplication-tooltip', content=ms.tooltip)
     meta(name='msapplication-square70x70logo', content='/assets/icon/pin-icon_70x70.png')
     meta(name='msapplication-square150x150logo', content='/assets/icon/pin-icon_150x150.png')
     meta(name='msapplication-square310x310logo', content='/assets/icon/pin-icon_310x310.png')
@@ -63,8 +65,8 @@ html()&attributes(htmlAttrs)
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    link(rel='stylesheet', href='/dist/lib.min.css')
-    link(rel='stylesheet', href='/dist/app.min.css')
+    link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
+    link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
     
     block head
     
@@ -72,8 +74,8 @@ html()&attributes(htmlAttrs)
     
     block body
 
-    script(src='/dist/lib.min.js')
-    script(src='/dist/app.min.js')
+    script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
+    script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
     
     block views
     
