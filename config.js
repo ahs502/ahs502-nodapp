@@ -6,6 +6,9 @@ var config = {
     /* Server IP address */
     serverIp: "176.9.194.237",
 
+    /* Deployment environment */
+    env: "dev", // "dev", "prod";
+
     buildPaths: {
 
         lib: {

@@ -14,12 +14,15 @@ var config = require("./config");
 
 var app = express();
 
+// set environment
+app.set("env", config.env);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views'));
 app.set('view engine', 'jade');
 
 app.use(favicon(path.join(__dirname, 'app/assets/icon', 'shortcut-icon.png')));
-app.use(logger('dev'));
+app.use(logger(config.env));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
@@ -50,10 +53,10 @@ app.use(path.join('/', config.meta.urlPrefix, config.meta.offlineCache.cacheMani
 app.use(path.join('/', config.meta.urlPrefix, config.meta.manifest.manifestFile),
     metaAndroidManifestHandler(config.meta.manifest.options));
 
-// add the ability to set the listen path for express's routers
-express.RouterFor = function(routeBase,options){
-    var router=express.Router(options);
-    router.routeBase=routeBase;
+// add the functionality to set the listen path for express's routers
+express.RouterFor = function(routeBase, options) {
+    var router = express.Router(options);
+    router.routeBase = routeBase;
     return router;
 };
 
@@ -109,7 +112,7 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
-if (app.get('env') === 'development') {
+if (app.get('env') === 'dev') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
         res.render('error', {
@@ -271,6 +274,7 @@ function walkSync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file
     return errors;
 }
 
+//TODO: Not working & I do not know why ?!
 // function walkAsync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file, stat)*/ , callbackEnd /*(Array of {err, path})*/ , decide /*(folder, stat, expand*/ ) {
 //     var errors = [],
 //     callbackEndWrapped = errs => {
@@ -334,7 +338,6 @@ function walkSync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file
 //         }
 //     });
 // }
-
 // walkAsync('.', (d, s) => console.log('>>', d), (f, s) => console.log('--', f), errs => console.log("ERRORS =", errs) , (d, s, expand) => ((d.indexOf('node_modules') < 0) &&(d.indexOf('/.') < 0) && expand()) );
 
 function metaAndroidManifestHandler(options /* Most likely is config.meta.manifest.options */ ) {

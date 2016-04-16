@@ -1,0 +1,39 @@
+extends layout
+
+block vars
+  - title = "Hessam's App ! - {{title}}";
+  - ngApp = 'OfflineApp';
+  - ngController = 'MasterController';
+
+
+
+block head
+  
+
+
+block body
+
+  // div (ng-app="a1" ng-controller="c1")
+  
+  div
+    p hi!!
+    p(ng-bind="title")
+    h1 gfgh
+    ui-view
+
+  
+
+
+block views
+  
+  // script(type="text/javascript").
+  //   var app=angular.module('OfflineApp',[]);
+  //   app.controller('MasterController',function($scope){
+  //     $scope.title="AAAAAAAAAAAAAAAAAA";
+  //   });
+
+
+  script(type="text/ng-template" id="/home_template")
+    
+    button.ui.primary.button {{title}}
+    

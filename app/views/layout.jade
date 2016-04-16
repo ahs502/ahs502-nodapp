@@ -2,12 +2,14 @@ doctype html
 
 block vars
 
-- offline       = offline       || false;             // Load HTML5 cache-manifest for this site ?
-- webappCapable = webappCapable || offline;
 - title         = title         || config.meta.manifest.options.short_name;
+- offline       = offline       || false;  // Load HTML5 cache-manifest for this site ?
+- webappCapable = webappCapable || offline;
+- loadAllFirst  = loadAllFirst  || true;  // Load any .js & .css dependency at the very first
+- lang          = lang          || "en";
+
 - ngApp         = ngApp         || undefined;
 - ngController  = ngController  || undefined;
-- lang          = lang          || "en";
 
 - viewport              = viewport              || {};
 - viewport.width        = viewport.width        || config.meta.viewport.width;
@@ -17,21 +19,27 @@ block vars
 
 - ms            = ms            || {};
 - ms.tileColor  = ms.tileColor  || config.meta.manifest.options.background_color  || "#FFF";
-- ms.name       = ms.name       || title;
+- ms.name       = ms.name       || config.meta.manifest.options.short_name        || title;
 - ms.tooltip    = ms.tooltip    || config.meta.manifest.options.name              || ms.name;
 
 - cacheManifestUrl    = '/' + config.meta.urlPrefix + '/' + config.meta.offlineCache.cacheManifestFile;
 - androidManifestUrl  = '/' + config.meta.urlPrefix + '/' + config.meta.manifest.manifestFile;
 
-- htmlAttrs               = htmlAttrs               || {};
-- htmlAttrs.lang          = htmlAttrs.lang          || lang;
-- htmlAttrs.ngApp         = htmlAttrs.ngApp         || ngApp;
-- htmlAttrs.ngController  = htmlAttrs.ngController  || ngController;
-- htmlAttrs.manifest      = htmlAttrs.manifest      || (offline ? cacheManifestUrl : undefined);
+- htmlAttrs                   = htmlAttrs                   || {};
+- htmlAttrs.lang              = htmlAttrs.lang              || lang;
+- htmlAttrs.manifest          = htmlAttrs.manifest          || (offline ? cacheManifestUrl : undefined);
+- htmlAttrs["ng-app"]         = htmlAttrs["ng-app"]         || ngApp;
+- htmlAttrs["ng-controller"]  = htmlAttrs["ng-controller"]  || ngController;
 
-html()&attributes(htmlAttrs)
+html&attributes(htmlAttrs)
 
   head
+  
+    if loadAllFirst
+      link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
+      link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
+      script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
+      script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
     
     title= title
     meta(charset="utf-8")
@@ -43,14 +51,8 @@ html()&attributes(htmlAttrs)
     if webappCapable
       meta(name="apple-mobile-web-app-capable" content="yes")
       meta(name="mobile-web-app-capable" content="yes")
-      
-      // Android pin to start
-      
       link(rel="manifest")&attributes({href: androidManifestUrl})
       
-    // WindowsPhone pin to start
-    // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
-    
     meta(name='msapplication-TileColor', content=ms.tileColor)
     meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
     meta(name='msapplication-config', content='none')
@@ -60,22 +62,25 @@ html()&attributes(htmlAttrs)
     meta(name='msapplication-square150x150logo', content='/assets/icon/pin-icon_150x150.png')
     meta(name='msapplication-square310x310logo', content='/assets/icon/pin-icon_310x310.png')
     meta(name='msapplication-wide310x150logo', content='/assets/icon/pin-icon_310x150.png')
+    // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
 
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-
-    link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
-    link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
+    
+    if !loadAllFirst
+      link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
+      link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
     
     block head
     
   body
     
     block body
-
-    script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
-    script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
+    
+    if !loadAllFirst
+      script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
+      script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
     
     block views
     

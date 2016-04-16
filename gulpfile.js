@@ -468,7 +468,7 @@ gulp.task('browser-sync', ['nginx'], callback => {
 
         gulp.watch(path.join(paths.dist, paths.app.stylesheetMinified))
             .on("change", () => bs.reload(path.join(paths.dist, paths.app.stylesheetMinified)));
-            
+
         gulp.watch(path.join(paths.dist, paths.lib.stylesheetMinified))
             .on("change", () => bs.reload(path.join(paths.dist, paths.lib.stylesheetMinified)));
 
@@ -499,8 +499,30 @@ gulp.task('start-app', ['build-app', 'build-src', 'start-node', 'watch', 'browse
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('default', ['build', 'start-node', 'watch', 'browser-sync'], callback => {
+gulp.task('default-dev', ['build', 'start-node', 'watch', 'browser-sync'], callback => {
     util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('default-prod', callback => {
+
+    //TODO: ...
+
+    util.log(" => Type 'gulp help' for more information.".bold);
+    callback(); // Nothing !
+});
+
+//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+gulp.task('default', callback => {
+    if (config.env === "dev") {
+        runSequence('default-dev');
+    }
+    else if (config.env === "prod") {
+        runSequence('default-prod');
+    }
     callback(); // Nothing !
 });
 

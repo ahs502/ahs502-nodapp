@@ -1,5 +1,9 @@
 
-Allow 'gulp nginx' to config static website contents too.
+    Modify 'gulp nginx' to config static website contents too.
+
+    Modify 'gulp default' according to config.env .
+
+
 
 
 
