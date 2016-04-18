@@ -1,0 +1,18 @@
+> See this link to get how to install MongoDB 3.2 on Ubuntu 15.10 : http://askubuntu.com/questions/724749/install-mongo-3-2-on-ubuntu-15-10
+
+> Install MongoDB :
+
+    # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    # echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+    # apt-get update
+    # apt-get install mongodb-org
+    
+    See this link to get how to fix the version of your MongoDB : https://docs.mongodb.org/manual/tutorial/install-mongodb-on-ubuntu/
+    
+    # systemctl status mongod   # Check if working
+    
+    If not working :
+    # ./bin/enable-mongodb-3.2-on-ubuntu-15.10.sh
+    or
+    # reboot
+
