@@ -16,3 +16,10 @@
     or
     # reboot
 
+> Install Node.js package :
+
+    # npm install --save mongodb
+
+> Install Mongoskin :
+
+    # npm install --save mongoskin

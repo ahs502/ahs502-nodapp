@@ -20,7 +20,42 @@ app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $ur
 
 }]);
 
-app.controller('MasterController', ["$scope", function($scope) {
-    $scope.title = "Everseen!";
-}]);
+app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
 
+    $scope.title = "Everseen!";
+
+    $scope.dataIn = '- - -';
+    $scope.dataOut = {};
+
+    $scope.error = null;
+
+    $scope.setIt = function() {
+        $http.post('/set/data', $scope.dataOut).then(function(response) {
+            $scope.error = null;
+            $scope.dataIn = '- - -';
+            alert("DONE!\n" + JSON.stringify(response.data, null, 4));
+        }, function(err) {
+            $scope.error = err;
+        });
+    };
+
+    $scope.getIt = function() {
+        $http.post('/get/data', {}).then(function(response) {
+            $scope.error = null;
+            $scope.dataIn = JSON.stringify(response.data, null, 4);
+        }, function(err) {
+            $scope.error = err;
+        });
+    };
+
+    $scope.delAll = function() {
+        $http.post('/delete/all').then(function(response) {
+            $scope.error = null;
+            $scope.dataIn = '- - -';
+            alert("DONE!\n" + JSON.stringify(response.data, null, 4));
+        }, function(err) {
+            $scope.error = err;
+        });
+    };
+
+}]);

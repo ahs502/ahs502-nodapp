@@ -332,6 +332,29 @@ var config = {
         injectChanges: true, // For CSSes
         // ...
 
+    },
+
+    /*
+    Database connection string settings.
+    If 'db' is not set or 'connectionString' does not have db name,
+        then you can use config.database.connectionDb(dbName) to get the connection string.
+    */
+    database: {
+
+        format: "mongodb",
+        username: null,
+        password: null,
+        hosts: [
+            "localhost:27017"
+        ],
+        db: null,
+
+        /*
+        If you set this, other parameters will be discarded.
+        Otherwise, it will be evaluated automatically by other parameters :
+            "[format://][username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/database]"
+        */
+        connectionString: ""
     }
 
 };
@@ -435,6 +458,11 @@ for (domain in config.dns) {
         }
     }
 }
+
+config.database.hosts = config.database.hosts || [];
+(!config.database.connectionString || (typeof config.database.connectionString !== "string") || (config.database.connectionString === "")) && (config.database.connectionString = (config.database.format ? (config.database.format + "://") : "") + (config.database.username ? (config.database.password ? (config.database.username + ":" + config.database.password + "@") : config.database.username + "@") : "") + config.database.hosts.join(",") + "/" + (config.database.db ? config.database.db : ""));
+
+config.database.connectionDb = dbName => config.database.connectionString + dbName;
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 

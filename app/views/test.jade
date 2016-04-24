@@ -13,27 +13,25 @@ block head
 
 block body
 
-  // div (ng-app="a1" ng-controller="c1")
-  
   div
-    p hi!!
     p(ng-bind="title")
-    h1 gfgh
     ui-view
 
   
 
 
 block views
-  
-  // script(type="text/javascript").
-  //   var app=angular.module('OfflineApp',[]);
-  //   app.controller('MasterController',function($scope){
-  //     $scope.title="AAAAAAAAAAAAAAAAAA";
-  //   });
-
 
   script(type="text/ng-template" id="/home_template")
     
-    button.ui.primary.button {{title}}
+    p ID:
+    input(ng-model="dataOut.id")
+    p Data:
+    input(ng-model="dataOut.data")
+    p
+    button.ui.primary.button(ng-click="setIt()") Set It
+    button.ui.secondary.button(ng-click="getIt()") Get it
+    button.ui.basic.button(ng-click="delAll()") Remove all
+    p(ng-if="JSON.stringify(error, null, 4)" ng-bind="error" style="{color: red}")
+    pre(ng-bind="dataIn")
     
