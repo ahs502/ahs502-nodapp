@@ -54,7 +54,7 @@ gulp.task('build-app-js', () => {
     var coffeeFilter = filter('**/*.coffee', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.src, ['js', 'coffee']), {
+    return gulp.src(appPath(paths.app.src, ['js', 'coffee'], true, 'lib').concat(appPath(paths.app.src, ['js', 'coffee'])), {
             base: paths.app.src
         })
         .pipe(jsFilter)
@@ -101,7 +101,7 @@ gulp.task('build-app-css', () => {
     var lessFilter = filter('**/*.less', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.style, ['css', 'less'], true), {
+    return gulp.src(appPath(paths.app.style, ['css', 'less'], true, 'lib').concat(appPath(paths.app.style, ['css', 'less'], true)), {
             base: paths.app.style
         })
         .pipe(cssFilter)
@@ -561,20 +561,29 @@ gulp.task('help', callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-function appPath(basePath, extensions, reverse) {
+function appPath(basePath, extensions, reverse /*=false*/ , deepName /*='*'*/ ) {
+    deepName = deepName || '*';
+
     function subPath(midPath) {
         return extensions.map(extension => path.join(basePath, midPath, '*.' + extension));
     }
+
+    function midPath(number) {
+        return '/' + Array(number + 1).join(deepName + '/');
+    }
+
     var files = [
-        subPath('/'),
-        subPath('/*/'),
-        subPath('/*/*/'),
-        subPath('/*/*/*/'),
-        subPath('/*/*/*/*/'),
-        subPath('/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/*/'),
-        subPath('/*/*/*/*/*/*/*/**/')
+        subPath(midPath(0)),
+        subPath(midPath(1)),
+        subPath(midPath(2)),
+        subPath(midPath(3)),
+        subPath(midPath(4)),
+        subPath(midPath(5)),
+        subPath(midPath(6)),
+        subPath(midPath(7)),
+        subPath(midPath(8)),
+        subPath(midPath(9)),
+        subPath(midPath(9) + '**/')
     ].reduce((total, current, index, array) => total.concat(current), []);
     reverse && files.reverse();
     return files;

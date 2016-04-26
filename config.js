@@ -17,9 +17,14 @@ var config = {
             js: [
                 "./app/lib/angular/angular.min.js",
                 "./app/lib/angular-ui-router/release/angular-ui-router.min.js",
-                "./app/lib/jquery/dist/jquery.min.js",
-                "./app/lib/semantic/dist/semantic.min.js",
                 "./app/lib/ui-router-extras/release/ct-ui-router-extras.min.js",
+                
+                "./app/lib/jquery/dist/jquery.min.js",
+                
+                "./app/lib/semantic/dist/semantic.min.js",
+                
+                "./app/lib/localforage/dist/localforage.min.js",
+                "./app/lib/angular-localforage/dist/localforage.min.js",
             ],
 
             /* List of all stylesheet files of client-side modules */
@@ -41,6 +46,8 @@ var config = {
             The path containing *.js and *.coffee source code files.
             You can use arbitrary directory structure to manage source files.
             Files within inner directories will be composed LATER.
+            The exception is 'lib' folders, which you can put your modules in it.
+            Files within 'lib' closure directories will be composed SOONER and at the TOP of other files.
             */
             src: "./app/src/",
 
@@ -48,6 +55,7 @@ var config = {
             The path containing *.css and *.less stylesheet files.
             You can use arbitrary directory structure to manage stylesheet files.
             Files within inner directories will be composed SOONER.
+            Files within 'lib' closure directories will be composed SOONER and at the TOP of other files.
             */
             style: "./app/style/",
 

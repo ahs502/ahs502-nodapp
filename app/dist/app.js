@@ -1,6 +1,17 @@
 // AHS502 : Application javascript file :
 
 /*
+	AHS502 : Start of 'app/src/lib/offline-storage.js'
+*/
+
+
+
+/*
+	AHS502 : End of 'app/src/lib/offline-storage.js'
+*/
+
+
+/*
 	AHS502 : Start of 'app/src/main.js'
 */
 

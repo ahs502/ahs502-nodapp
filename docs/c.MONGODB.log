@@ -23,3 +23,10 @@
 > Install Mongoskin :
 
     # npm install --save mongoskin
+
+# LocalForage; See: http://mozilla.github.io/localForage/
+
+> Install LocalForage & AngularLocalForage bower packages :
+
+    # bower install --allow-root localforage angular-localforage
+    Then, add their paths to config.js and run 'gulp build-lib'
