@@ -30,7 +30,7 @@ block views
     input(ng-model="dataOut.data")
     p
     button.ui.primary.button(ng-click="setIt()") Set It
-    button.ui.secondary.button(ng-click="getIt()") Get it
+    button.ui.secondary.button(ng-click="getAll()") Get all
     button.ui.basic.button(ng-click="delAll()") Remove all
     p(ng-if="JSON.stringify(error, null, 4)" ng-bind="error" style="{color: red}")
     pre(ng-bind="dataIn")

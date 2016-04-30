@@ -54,7 +54,7 @@ gulp.task('build-app-js', () => {
     var coffeeFilter = filter('**/*.coffee', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.src, ['js', 'coffee'], true, 'lib').concat(appPath(paths.app.src, ['js', 'coffee'])), {
+    return gulp.src(appPath(paths.app.src, ['js', 'coffee'], true, 'modules').concat(appPath(paths.app.src, ['js', 'coffee'])), {
             base: paths.app.src
         })
         .pipe(jsFilter)
@@ -101,7 +101,7 @@ gulp.task('build-app-css', () => {
     var lessFilter = filter('**/*.less', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.style, ['css', 'less'], true, 'lib').concat(appPath(paths.app.style, ['css', 'less'], true)), {
+    return gulp.src(appPath(paths.app.style, ['css', 'less'], true, 'modules').concat(appPath(paths.app.style, ['css', 'less'], true)), {
             base: paths.app.style
         })
         .pipe(cssFilter)
@@ -162,9 +162,9 @@ gulp.task('build-lib-js', () =>
     .pipe(concat(paths.lib.javascript))
     .pipe(gulp.dest(paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Javascript file has been created.'.green))
-    // .pipe(sourcemaps.init())
-    .pipe(uglify())
-    // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
+    // // .pipe(sourcemaps.init())
+    // .pipe(uglify())
+    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
     .pipe(rename(paths.lib.javascriptMinified))
     .pipe(gulp.dest(paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Minified javascript file has been created.'.green)));
@@ -187,9 +187,9 @@ gulp.task('build-lib-css', () =>
     .pipe(concat(paths.lib.stylesheet))
     .pipe(gulp.dest(paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Stylesheet file has been created.'.green))
-    // .pipe(sourcemaps.init())
-    .pipe(cssnano())
-    // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
+    // // .pipe(sourcemaps.init())
+    // .pipe(cssnano())
+    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
     .pipe(rename(paths.lib.stylesheetMinified))
     .pipe(gulp.dest(paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Minified stylesheet file has been created.'.green)));

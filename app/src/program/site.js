@@ -1,5 +1,9 @@
 /*global app*/
 
+app.run(function() {
+    //...
+});
+
 app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
 
     // Do not allow arbitrary paths :
@@ -39,8 +43,8 @@ app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
         });
     };
 
-    $scope.getIt = function() {
-        $http.post('/get/data', {}).then(function(response) {
+    $scope.getAll = function() {
+        $http.post('/get/all', {}).then(function(response) {
             $scope.error = null;
             $scope.dataIn = JSON.stringify(response.data, null, 4);
         }, function(err) {

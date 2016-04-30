@@ -40,7 +40,7 @@ router.post('/set/data', (req, res) => {
 });
 
 
-router.post('/get/data', (req, res) => {
+router.post('/get/all', (req, res) => {
     var filter = req.body;
     var db = mongo.db(config.database.connectionDb("test"));
     db.collection('ahs').find(filter).toArray((err, result) => {

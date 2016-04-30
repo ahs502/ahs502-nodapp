@@ -1,6 +1,6 @@
 /*global angular*/
 
-var app = angular.module('OfflineApp', ['ui.router', 'LocalForageModule']);
+var app = angular.module('OfflineApp', ['ui.router', 'ngOnflineModule' /*, 'LocalForageModule'*/ ]);
 
 // app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
 
