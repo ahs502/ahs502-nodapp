@@ -30,10 +30,10 @@ var config = {
                 "./app/lib/jquery/dist/jquery.min.js",
                 
                 "./app/lib/localforage/dist/localforage.min.js",
-                "./app/lib/angular-localforage/dist/angular-localforage.min.js",
+                // "./app/lib/angular-localforage/dist/angular-localForage.min.js",
                 
-                // "./app/lib/semantic/dist/semantic.min.js",
                 /* Semantic-ui modules */
+                // "./app/lib/semantic/dist/semantic.min.js",
                 "./app/lib/semantic/dist/components/site.min.js",
 
             ],
@@ -41,8 +41,8 @@ var config = {
             /* List of all stylesheet files of client-side modules */
             css: [
                 
-                // "./app/lib/semantic/dist/semantic.min.css",
                 /* Semantic-ui modules */
+                // "./app/lib/semantic/dist/semantic.min.css",
                 "./app/lib/semantic/dist/components/site.min.css",
                 "./app/lib/semantic/dist/components/button.min.css",
                 

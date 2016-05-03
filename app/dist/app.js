@@ -1,55 +1,144 @@
 // AHS502 : Application javascript file :
 
 /*
-	AHS502 : Start of 'app/src/modules/localforage-sync.js'
-*/
-
-// /*global localforage*/
-
-// localforage && (function(lf) {
-
-//     lf.synchronize = synchronize;
-
-//     function synchronize(url, callback /*(error)*/ ) {
-//         //...
-//     }
-
-// })(localforage);
-
-
-/*
-	AHS502 : End of 'app/src/modules/localforage-sync.js'
-*/
-
-
-/*
-	AHS502 : Start of 'app/src/modules/ng-onfline.js'
+	AHS502 : Start of 'app/src/modules/ahs-onfline.js'
 */
 
 /*global angular*/
-angular.module("ngOnflineModule", [])
-    /*Service*/
-    .service("Onfline", ['$window',
-        function($window) {
-            this.isOnline = function() {
-                return !!$window.navigator.onLine;
-            };
-            this.isOffline = function() {
-                return !$window.navigator.onLine;
-            };
-            this.whenOnline = function(whatToDo) {
-                $window.addEventListener("online", whatToDo);
-            };
-            this.whenOffline = function(whatToDo) {
-                $window.addEventListener("offline", whatToDo);
-            };
-        }
-    ])
+
+angular.module("AhsOnfline", [])
+    /*Services*/
+    .service("Onfline", ['$window', function($window) {
+        this.isOnline = function() {
+            return !!$window.navigator.onLine;
+        };
+        this.isOffline = function() {
+            return !$window.navigator.onLine;
+        };
+        this.whenOnline = function(whatToDo) {
+            $window.addEventListener("online", whatToDo);
+        };
+        this.whenOffline = function(whatToDo) {
+            $window.addEventListener("offline", whatToDo);
+        };
+    }])
     /*End*/
 ;
 
 /*
-	AHS502 : End of 'app/src/modules/ng-onfline.js'
+	AHS502 : End of 'app/src/modules/ahs-onfline.js'
+*/
+
+
+/*
+	AHS502 : Start of 'app/src/modules/ahs-syncforage.js'
+*/
+
+// /*global localforage*/
+
+// localforage && (function(localforage, global) {
+
+//     var lf = localforage.createInstance({
+//         name: "AhsSyncForage_DB"
+//     });
+
+    
+//     function setItem(key,value,callback){
+//         return
+//     }
+    
+//     function getItem(key,callback) {
+//         //
+//     }
+    
+//     function removeItem(key,callback){
+//         //
+//     }
+    
+    
+
+//     function Item(name) {
+//         //...
+//     }
+
+//     Item.prototype.set = function Item_set(value, callback) {
+//         this.newValue = value;
+//         this.modified = true;
+//         (typeof callback === "function") && this.commit(callback);
+//     };
+
+//     Item.prototype.remove = function Item_remove(callback) {
+//         //
+//     };
+
+//     Item.prototype.commit = function Item_commit(callback) {
+//         //
+//     }
+
+//     Item.prototype.get = function Item_get(callback) {
+//         //
+//     };
+
+
+
+//     global["syncforage"] = {
+//         //...
+//     };
+
+// })(localforage, window);
+
+
+
+
+
+
+
+
+
+
+
+
+// // /*global angular*/
+
+// // angular
+// //     .module("AhsSyncForage", ['LocalForageModule'])
+// //     /*Configurations*/
+// //     .config(['$localForageProvider', function($localForageProvider) {
+
+// //         $localForageProvider.config({
+// //             name: 'AhsSyncForage_DB', // name of the database and prefix for your data, it is "lf" by default
+// //             storeName: 'keyvaluepairs' // name of the table
+// //         });
+
+// //     }])
+// //     /*Services*/
+// //     .service("$syncForage", ['$localForage', '$http', function($localForage, $http) {
+
+// //         this.setItem = function setItem(key, val) {
+// //             //...
+// //         };
+
+// //         this.getItem = function getItem(key) {
+// //             // body...
+// //         };
+
+// //         this.removeItem = function removeItem(key) {
+// //             // body...
+// //         };
+
+// //         this.table=function table(tableName){
+// //             return {
+// //                 //....
+// //             };
+// //         };
+
+// //     }])
+// //     /*End*/
+// // ;
+
+
+/*
+	AHS502 : End of 'app/src/modules/ahs-syncforage.js'
 */
 
 
@@ -59,7 +148,7 @@ angular.module("ngOnflineModule", [])
 
 /*global angular*/
 
-var app = angular.module('OfflineApp', ['ui.router', 'ngOnflineModule' /*, 'LocalForageModule'*/ ]);
+var app = angular.module('OfflineApp', ['ui.router', 'AhsOnfline']);
 
 // app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
 
