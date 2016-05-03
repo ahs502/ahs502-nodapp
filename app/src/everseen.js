@@ -1,10 +1,12 @@
-/*global app*/
+/*global angular*/
 
-app.run(function() {
+angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
+
+.run(function() {
     //...
-});
+})
 
-app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
+.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
 
     // Do not allow arbitrary paths :
     $urlRouterProvider.otherwise("/");
@@ -22,9 +24,9 @@ app.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $ur
             template: "<div><h2>My timer application</h2><h3>A survey on AngularJS applications !</h3></div>"
         });
 
-}]);
+}])
 
-app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
+.controller('MasterController', ["$scope", "$http", function($scope, $http) {
 
     $scope.title = "Everseen!";
 
@@ -34,7 +36,7 @@ app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
     $scope.error = null;
 
     $scope.setIt = function() {
-        $http.post('/set/data', $scope.dataOut).then(function(response) {
+        $http.post('/everseen/set/data', $scope.dataOut).then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));
@@ -44,7 +46,7 @@ app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
     };
 
     $scope.getAll = function() {
-        $http.post('/get/all', {}).then(function(response) {
+        $http.post('/everseen/get/all', {}).then(function(response) {
             $scope.error = null;
             $scope.dataIn = JSON.stringify(response.data, null, 4);
         }, function(err) {
@@ -53,7 +55,7 @@ app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
     };
 
     $scope.delAll = function() {
-        $http.post('/delete/all').then(function(response) {
+        $http.post('/everseen/delete/all').then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));
@@ -62,4 +64,6 @@ app.controller('MasterController', ["$scope", "$http", function($scope, $http) {
         });
     };
 
-}]);
+}])
+
+;

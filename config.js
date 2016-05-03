@@ -10,7 +10,7 @@ var config = {
     env: "dev", // "dev", "prod";
 
     buildPaths: {
-        
+
         /*
         IMPORTANT NOTE:
             For now I've decided to just use minified versions of lib dependencies.
@@ -22,16 +22,16 @@ var config = {
 
             /* List of all javascript files of client-side modules */
             js: [
-                
+
                 "./app/lib/angular/angular.min.js",
                 "./app/lib/angular-ui-router/release/angular-ui-router.min.js",
                 "./app/lib/ui-router-extras/release/ct-ui-router-extras.min.js",
-                
+
                 "./app/lib/jquery/dist/jquery.min.js",
-                
+
                 "./app/lib/localforage/dist/localforage.min.js",
                 // "./app/lib/angular-localforage/dist/angular-localForage.min.js",
-                
+
                 /* Semantic-ui modules */
                 // "./app/lib/semantic/dist/semantic.min.js",
                 "./app/lib/semantic/dist/components/site.min.js",
@@ -40,12 +40,12 @@ var config = {
 
             /* List of all stylesheet files of client-side modules */
             css: [
-                
+
                 /* Semantic-ui modules */
                 // "./app/lib/semantic/dist/semantic.min.css",
                 "./app/lib/semantic/dist/components/site.min.css",
                 "./app/lib/semantic/dist/components/button.min.css",
-                
+
             ],
 
             base: "./app/lib/",
@@ -332,9 +332,9 @@ var config = {
 
         /* All fields are optional */
         domains: {
-            dev: "dev.ahs502.ir", //: localPort & localPort+1
-            ui: "bs.ahs502.ir", //: localPort+2
-            weinre: "weinre.ahs502.ir", //: localPort+3
+            dev: "dev.ahs502.ir", //: port & port+1
+            ui: "bs.ahs502.ir", //: port+2
+            weinre: "weinre.ahs502.ir", //: port+3
         },
 
         port: null, // By default = config.nodePort + 1
