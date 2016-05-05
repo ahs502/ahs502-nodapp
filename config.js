@@ -6,6 +6,9 @@ var config = {
     /* Server IP address */
     serverIp: "176.9.194.237",
 
+    // /* Application name on server-side, by default is 'index' & loads all routers */
+    // serverApp: 'everseen',
+
     /* Deployment environment */
     env: "dev", // "dev", "prod";
 
@@ -25,7 +28,7 @@ var config = {
 
                 "./app/lib/angular/angular.min.js",
                 "./app/lib/angular-ui-router/release/angular-ui-router.min.js",
-                "./app/lib/ui-router-extras/release/ct-ui-router-extras.min.js",
+                //"./app/lib/ui-router-extras/release/ct-ui-router-extras.min.js",
 
                 "./app/lib/jquery/dist/jquery.min.js",
 
@@ -165,13 +168,13 @@ var config = {
             By default is [].
             */
             files: [
+                '/',
+                'meta/cache-manifest.appcache',
+                'meta/android-manifest.json',
                 'dist/lib.min.css',
                 'dist/lib.min.js',
                 'dist/app.min.css',
                 'dist/app.min.js',
-                'meta/cache-manifest.appcache',
-                'meta/android-manifest.json',
-                '/',
             ],
 
             /*
@@ -393,9 +396,11 @@ var config = {
 Set all default values
 */
 
-var temp, i;
+var temp;
 
 config.nodePort = config.nodePort || 12345;
+
+//(config.serverApp == 'index') && (config.serverApp = null);
 
 config.dns = config.dns || {};
 

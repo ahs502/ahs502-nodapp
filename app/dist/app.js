@@ -72,7 +72,7 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     $scope.error = null;
 
     $scope.setIt = function() {
-        $http.post('/everseen/set/data', $scope.dataOut).then(function(response) {
+        $http.post('/set/data', $scope.dataOut).then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));
@@ -82,7 +82,7 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     };
 
     $scope.getAll = function() {
-        $http.post('/everseen/get/all', {}).then(function(response) {
+        $http.post('/get/all', {}).then(function(response) {
             $scope.error = null;
             $scope.dataIn = JSON.stringify(response.data, null, 4);
         }, function(err) {
@@ -91,7 +91,7 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     };
 
     $scope.delAll = function() {
-        $http.post('/everseen/delete/all').then(function(response) {
+        $http.post('/delete/all').then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));

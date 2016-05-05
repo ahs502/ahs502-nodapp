@@ -74,7 +74,7 @@ express.RouterFor = function(routeBase, options) {
             var routePath = undefined;
             item.slice(-3) == '.js' && (routePath = item.slice(0, -3));
             item.slice(-7) == '.coffee' && (routePath = item.slice(0, -7));
-            if (routePath) {
+            if (routePath /*&& (!config.serverApp || ((routePath + '/').indexOf('routes/' + config.serverApp + '/') === 0))*/ ) {
                 // routePath :> 'routes/index'
                 var itemPath = './' + item;
                 // itemPath :> './routes/index.js'
@@ -82,7 +82,8 @@ express.RouterFor = function(routeBase, options) {
                     var route = require(itemPath),
                         routeBase = route.routeBase || routePath.slice(6);
                     // routeBase :> '/index'
-                    !route.routeBase && (routeBase == '/index') && (routeBase = '/');
+                    /*var routeIndex = !config.serverApp ? '/index' : ('/' + config.serverApp);*/
+                    !route.routeBase && (routeBase == '/index' /*routeIndex*/ ) && (routeBase = '/');
                     // routeBase :> '/'
                     route && routeBase && app.use(routeBase, route);
                     console.log('>> Load route controller ' + itemPath.blue.bold + ' for ' + routeBase.green.bold);
