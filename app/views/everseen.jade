@@ -2,7 +2,7 @@ extends layout
 
 block vars
   - title = "Hessam's App ! - {{title}}";
-  - ngApp = 'OfflineApp';
+  - ngApp = 'Everseen';
   - ngController = 'MasterController';
 
 
@@ -29,9 +29,10 @@ block views
     p Data:
     input(ng-model="dataOut.data")
     p
-    button.ui.primary.button(ng-click="setIt()") Set It
+    button.ui.primary.button(ng-click="setIt()") Set it
     button.ui.secondary.button(ng-click="getAll()") Get all
     button.ui.basic.button(ng-click="delAll()") Remove all
+    button.ui.green.button(ng-click="testIt()") Test it
     p(ng-if="JSON.stringify(error, null, 4)" ng-bind="error" style="{color: red}")
     pre(ng-bind="dataIn")
     

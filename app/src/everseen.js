@@ -1,12 +1,12 @@
 /*global angular*/
 
-angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
+angular.module('Everseen', ['ui.router', 'AhsSyncForage'])
 
 .run(function() {
     //...
 })
 
-.config(["$stateProvider", "$urlRouterProvider", function($stateProvider, $urlRouterProvider) {
+.config(["$stateProvider", "$urlRouterProvider", "SyncForageProvider", function($stateProvider, $urlRouterProvider, syncForageProvider) {
 
     // Do not allow arbitrary paths :
     $urlRouterProvider.otherwise("/");
@@ -24,9 +24,13 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
             template: "<div><h2>My timer application</h2><h3>A survey on AngularJS applications !</h3></div>"
         });
 
+    syncForageProvider.config({
+        syncURL: '/everseen/syncforage'
+    });
+
 }])
 
-.controller('MasterController', ["$scope", "$http", function($scope, $http) {
+.controller('MasterController', ["$scope", "$http", "SyncForage", function($scope, $http, syncForage) {
 
     $scope.title = "Everseen!";
 
@@ -36,7 +40,7 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     $scope.error = null;
 
     $scope.setIt = function() {
-        $http.post('/set/data', $scope.dataOut).then(function(response) {
+        $http.post('/everseen/set/data', $scope.dataOut).then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));
@@ -46,7 +50,7 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     };
 
     $scope.getAll = function() {
-        $http.post('/get/all', {}).then(function(response) {
+        $http.post('/everseen/get/all', {}).then(function(response) {
             $scope.error = null;
             $scope.dataIn = JSON.stringify(response.data, null, 4);
         }, function(err) {
@@ -55,13 +59,17 @@ angular.module('OfflineApp', ['ui.router', 'AhsOnfline'])
     };
 
     $scope.delAll = function() {
-        $http.post('/delete/all').then(function(response) {
+        $http.post('/everseen/delete/all').then(function(response) {
             $scope.error = null;
             $scope.dataIn = '- - -';
             alert("DONE!\n" + JSON.stringify(response.data, null, 4));
         }, function(err) {
             $scope.error = err;
         });
+    };
+
+    $scope.testIt = function() {
+        syncForage.test();
     };
 
 }])

@@ -65,6 +65,12 @@ router.post('/delete/all', (req, res) => {
 });
 
 
+router.post('/syncforage', (req, res) => {
+    console.log(JSON.stringify(req.body, null, 4));
+    res.send("Stored; Done!");
+});
+
+
 ///////////////////////////////////////////////////////////////
 
 module.exports = router;
