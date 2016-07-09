@@ -30,3 +30,10 @@
 
     # bower install --allow-root localforage angular-localforage
     Then, add their paths to config.js and run 'gulp build-lib'
+
+> I've used 'dirty' as my simple key-value store on file system :
+
+    # npm install --save dirty
+    See: https://github.com/felixge/node-dirty
+    
+    For a key-value store on MongoDB, see: https://www.npmjs.com/package/mongo_keyval

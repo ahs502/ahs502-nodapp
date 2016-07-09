@@ -24,6 +24,7 @@ angular.module('Everseen', ['ui.router', 'AhsSyncForage'])
             template: "<div><h2>My timer application</h2><h3>A survey on AngularJS applications !</h3></div>"
         });
 
+    // Testing AhsSyncForage :
     syncForageProvider.config({
         syncURL: '/everseen/syncforage'
     });

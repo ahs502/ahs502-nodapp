@@ -12,13 +12,13 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
             /* SyncForage specific */
             syncURL: '/syncforage',
             autoSync: true,
+            autoSyncPeriod: 60, // sec
             versionFieldName: "AhsSyncForage_Version"
         },
         lf = null;
 
     function configure(newOptions) {
         angular.extend(options, newOptions);
-        lf = localforage.createInstance(options);
     }
 
     return {
@@ -29,22 +29,28 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
 
             var cache = {}, // Cache for stored items
                 changed = [], // List of updated keys that are not synchronized yet
-                removed = []; // List of removed keys that are not synchronized yet
+                removed = [], // List of removed keys that are not synchronized yet
+                initPromise = null; // If not null, the promise that should be resolved for initialization
 
             changed.push(options.versionFieldName);
 
+            initialize();
+
             return {
 
-                config: configure,
+                config: function(newOptions) {
+                    configure(newOptions);
+                    initialize();
+                }, // (options)
 
-                setItem: setItem,
-                getItem: getItem,
-                removeItem: removeItem,
-                sync: sync,
+                setItem: setItem, // (key, value [,cb])
+                getItem: getItem, // (key [,cb])
+                removeItem: removeItem, // (key [,cb])
+                sync: sync, // ([cb])
 
-                syncURL: syncURL,
-                autoSync: autoSync,
-                getLocalForageInstance: getLocalForageInstance,
+                syncURL: syncURL, // () Get / (url) Set the URL to syncronize to.
+                autoSync: autoSync, // () Get / (active) Set status of the ability to automatic synchronization.
+                getLocalForageInstance: getLocalForageInstance, // () Get instance of localForage which is being used for SyncForage.
 
                 test: test,
 
@@ -61,7 +67,7 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
                         console.log(zxc + "   Cache: ", JSON.stringify(cache));
                         console.log(zxc + "   Changed: ", JSON.stringify(changed));
                         console.log(zxc + "   Removed: ", JSON.stringify(removed));
-                    }
+                    };
                 }
 
                 // (setItem('a', 12345).then(lg('a added')))
@@ -163,7 +169,22 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
 
             }
 
+            function initialize() {
+                if (!options.autoSync) {
+                    lf = localforage.createInstance(options);
+                    initPromise=null;
+                }else
+                {
+                    onfline.whenOnline(function() {
+                        sync();
+                    });
+                    //...
+                    //TODO: sync() & fill initPromise
+                }
+            }
+
             function setItem(key, value, callback) {
+                _checkInitialization();
                 var promise;
                 if (key == options.versionFieldName) {
                     promise = $q.when();
@@ -182,6 +203,7 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
             }
 
             function getItem(key, callback) {
+                _checkInitialization();
                 var promise;
                 if (Object.keys(cache).indexOf(key) >= 0) {
                     promise = $q.when(cache[key]);
@@ -199,6 +221,7 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
             }
 
             function removeItem(key, callback) {
+                _checkInitialization();
                 var promise;
                 if (key == options.versionFieldName) {
                     promise = $q.when();
@@ -222,6 +245,7 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
             }
 
             function sync(callback) {
+                _checkInitialization();
                 var itemsToBeSent = {},
                     retriverPromises = [];
                 changed.forEach(function(key) {
@@ -308,6 +332,11 @@ angular.module("AhsSyncForage", ['AhsOnfline'])
                     list.splice(index, 1);
                 }
                 return index >= 0;
+            }
+
+            function _checkInitialization() {
+                if (!lf)
+                    throw new Error("AhsSyncForage is not initialized yet. Please configure SyncForageProvider.config([options]) first.");
             }
 
         }]

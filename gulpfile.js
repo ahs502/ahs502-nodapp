@@ -311,7 +311,7 @@ gulp.task('bind9', callback => {
             '\n';
 
         var db =
-            "$TTL 14400\n" +
+            "$TTL 86400\n" +
             "@ IN SOA " + ns[0] + "." + domain + ". " + root + "." + domain + ". (\n" +
             "               2016032700 ; Serial\n" +
             "               7200       ; Refresh\n" +
