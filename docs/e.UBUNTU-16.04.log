@@ -68,9 +68,6 @@
 	# cd ~/ahs502-nodapp/
 	# sudo npm install
 
-	Install semantic-ui using 'gulp install' in folder lib/semantic/ first,
-	Then, disable Google fonts like described earlier.
-
 > Setup bind9 :: (See: BIND9.log)
 
     # apt-get install -y bind9

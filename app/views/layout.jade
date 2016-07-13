@@ -3,9 +3,9 @@ doctype html
 block vars
 
 - title         = title         || config.meta.manifest.options.short_name;
-- offline       = offline       || false;  // Load HTML5 cache-manifest for this site ?
+- offline       = offline       || (offline === undefined) ? false : offline;  // Load HTML5 cache-manifest for this site ?
 - webappCapable = webappCapable || offline;
-- loadAllFirst  = loadAllFirst  || true;  // Load any .js & .css dependency at the very first
+- loadAllFirst  = loadAllFirst  || (loadAllFirst === undefined) ? true : loadAllFirst;  // Load any .js & .css dependency at the very first
 - lang          = lang          || "en";
 
 - ngApp         = ngApp         || undefined;

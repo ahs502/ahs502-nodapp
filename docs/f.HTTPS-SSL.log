@@ -1,0 +1,89 @@
+> Generate Certificates : (See: https://www.sitepoint.com/how-to-use-ssltls-with-node-js/)
+
+    # mkdir ssl-keys; cd ssl-keys
+    # openssl genrsa -des3 -out server.enc.key 2048
+    # openssl req -new -key server.enc.key -out server.csr
+    # openssl rsa -in server.enc.key -out server.key
+    # openssl x509 -req -in server.csr -signkey server.key -out server.crt -days 365
+
+> Stop Nginx to free port 80 : (Optional, if you are also starting HTTP form alongside HTTPS)
+
+    # systemctl stop nginx
+
+> Create a sample Node.js Express project for HTTPS : (See: https://www.sitepoint.com/how-to-use-ssltls-with-node-js/)
+
+    Generate a new express project :
+    
+    # express https-test
+    # cd https-test
+    # npm i
+    # npm i --save https
+    
+    Then, modify './bin/www' : (See: https://www.sitepoint.com/how-to-use-ssltls-with-node-js/)
+    Note that both HTTP and HTTPS for the site have been served !
+===============================================================================
+var app = require('../app');
+var debug = require('debug')('googoo:server');
+
+var fs = require('fs');
+
+var http = require('http');
+var https = require('https');
+
+var options = {
+   key  : fs.readFileSync('/root/ssl-keys/server.key'),
+   cert : fs.readFileSync('/root/ssl-keys/server.crt')
+};
+
+var server = http.createServer(app);
+var server2 = https.createServer(options, app);
+
+server.listen(80);
+server.on('error', onError);
+server.on('listening', onListening);
+
+server2.listen(443);
+server2.on('error', onError);
+server2.on('listening', onListening);
+-------------------------------------------------------------------------------
+
+> Start server :
+
+    # npm start
+
+> Test both links "http://ahs502.ir" and "https://ahs502.ir" in your browser ...
+
+> Stop server by pressing <Ctrl+C>
+
+> Start Nginx again :
+
+    # systemctl start nginx
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>> Activate HTTPS in AHS502-Nodapp :
+
+> Install https :
+
+    # npm i --save https
+
+> Modify bin/start :
+
+
+
+
+

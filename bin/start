@@ -7,20 +7,28 @@
 var app = require('../server');
 var config = require('../config');
 var debug = require('debug')('ahs502-nodapp:server');
+var fs = require("fs-extra");
 var http = require('http');
+var https = require('https');
 
 /**
- * Get port from environment and store in Express.
+ * Get port from environment or configuration and store in Express.
  */
 
 var port = normalizePort(process.env.PORT || config.nodePort);
 app.set('port', port);
 
 /**
- * Create HTTP server.
+ * Create HTTP/HTTPS server.
+ * I've forbidden both protocols run in parallel, but it's technically possible !
  */
 
-var server = http.createServer(app);
+var server = (!config.https.active) ?
+    http.createServer(app) :
+    https.createServer({
+        key: fs.readFileSync(config.https.privateKey),
+        cert: fs.readFileSync(config.https.certificate)
+    }, app);
 
 /**
  * Listen on provided port, on all network interfaces.

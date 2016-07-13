@@ -12,6 +12,16 @@ var config = {
     /* Deployment environment */
     env: "dev", // "dev", "prod";
 
+    /* HTTPS configuration */
+    https: {
+
+        active: false,
+
+        privateKey: "/root/ssl-keys/server.key", // RSA private key file path
+        certificate: "/root/ssl-keys/server.crt" // Certificate file path
+
+    },
+
     buildPaths: {
 
         /*
@@ -100,7 +110,7 @@ var config = {
         ],
 
         /*
-        Server-side codes & modules including *.js and &.coffee files.
+        Server-side codes & modules including *.js and *.coffee files.
         You can use arbitrary directory structure to manage source files.
         Coffee files will be compiled to corresponding javascript files within the same path.
         */
@@ -126,7 +136,7 @@ var config = {
     */
     meta: {
 
-        /* Rul prefix to serve meta info under it, by default is 'meta' */
+        /* Url prefix to serve meta info under it, by default is 'meta' */
         urlPrefix: 'meta',
 
         /* Settings needed to serve HTML5 offline cache manifest file */
@@ -162,7 +172,7 @@ var config = {
                 [
                     'some/path/to/a/file/or/custom/url',
                     ...
-                    ['some/path/to/other/file', 'url/instead/of/path/to/that/file'],
+                    ['some/path/to/a/file', 'url/instead/of/path/to/that/file'],
                     ...
                 ]
             By default is [].
@@ -236,7 +246,7 @@ var config = {
 
     },
 
-    /* dns :
+    /*
     Bind9 name server configurations.
     First domain will be used for reverse zone.
     By default we have :
@@ -308,19 +318,19 @@ var config = {
     */
     nginx: {
 
-        "ahs502.ir": "http://localhost:8011",
+        "ahs502.ir": "http://localhost:8010",
         "test.ahs502.ir": "http://localhost:8019",
         "ide.ahs502.ir": "http://localhost:8080",
 
-        "hesamhesab.ir": "http://localhost:8021",
+        "hesamhesab.ir": "http://localhost:8020",
         "test.hesamhesab.ir": "http://localhost:8029",
         "ide.hesamhesab.ir": "http://localhost:8080",
 
-        "mehrnoosh72.ir": "http://localhost:8031",
+        "mehrnoosh72.ir": "http://localhost:8030",
         "test.mehrnoosh72.ir": "http://localhost:8039",
         "ide.mehrnoosh72.ir": "http://localhost:8080",
 
-        "minush.ir": "http://localhost:8041",
+        "minush.ir": "http://localhost:8040",
         "test.minush.ir": "http://localhost:8049",
         "ide.minush.ir": "http://localhost:8080",
 
@@ -367,6 +377,8 @@ var config = {
         then you can use config.database.connectionDb(dbName) to get the connection string.
     */
     database: {
+
+        //TODO: ...
 
         format: "mongodb",
         username: null,

@@ -1,6 +1,27 @@
 #! /usr/bin/node
 
-// Sett: https://github.com/felixge/node-dirty
+
+
+var x =
+    `
+                        ksdjf sf
+                         sdfh gdh
+                         s hg
+                         hj fg j
+                         fgj jh sghsdf
+                         h 
+                           
+                           sd gs
+                            sdgsh 
+                            dgh d
+                    `;
+
+console.log(x);
+
+
+
+/*
+// See: https://github.com/felixge/node-dirty
 
 var dirty=require("dirty");
 
@@ -22,4 +43,4 @@ db.on('load',()=>{
 db.on('drain',()=>{
     console.log('Done!');
 });
-
+*/
