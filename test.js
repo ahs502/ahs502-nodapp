@@ -2,6 +2,13 @@
 
 
 
+
+console.dir(process.env);
+
+
+
+
+/*
 var x =
     `
                         ksdjf sf
@@ -17,7 +24,7 @@ var x =
                     `;
 
 console.log(x);
-
+*/
 
 
 /*

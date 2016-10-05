@@ -30,12 +30,11 @@ var bs, browserSync = require("browser-sync");
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 var config = require("./config");
-var paths = config.buildPaths;
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('clean', callback => {
-    del([path.join(paths.dist, '*')]).then(items => {
+    del([path.join(config.paths.dist, '*')]).then(items => {
         if (items && items.length && items.length > 0) {
             util.log(' -> ' + 'Deleted files and folders :'.green);
             items.forEach(item => util.log(item.yellow));
@@ -54,8 +53,8 @@ gulp.task('build-app-js', () => {
     var coffeeFilter = filter('**/*.coffee', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.src, ['js', 'coffee'], true, 'modules').concat(appPath(paths.app.src, ['js', 'coffee'])), {
-            base: paths.app.src
+    return gulp.src([].concat(config.paths.app.src).map(x => path.join(config.paths.app.srcBase, x)), {
+            base: config.paths.app.srcBase
         })
         .pipe(jsFilter)
         .pipe(gprint(file => ' -> [' + 'app'.cyan + '] Javascript file: ' + file))
@@ -81,14 +80,14 @@ gulp.task('build-app-js', () => {
             footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
         }))
         .pipe(file('introduction.js', "// AHS502 : Application javascript file :"))
-        .pipe(concat(paths.app.javascript))
-        .pipe(gulp.dest(paths.dist))
+        .pipe(concat('app.js'))
+        .pipe(gulp.dest(config.paths.dist))
         .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Javascript file has been created.'.green))
         // .pipe(sourcemaps.init())
         .pipe(uglify())
-        // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
-        .pipe(rename(paths.app.javascriptMinified))
-        .pipe(gulp.dest(paths.dist))
+        // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(config.paths.dist))
+        .pipe(rename('app.min.js'))
+        .pipe(gulp.dest(config.paths.dist))
         .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified javascript file has been created.'.green));
 });
 
@@ -101,8 +100,8 @@ gulp.task('build-app-css', () => {
     var lessFilter = filter('**/*.less', {
         restore: true
     });
-    return gulp.src(appPath(paths.app.style, ['css', 'less'], true, 'modules').concat(appPath(paths.app.style, ['css', 'less'], true)), {
-            base: paths.app.style
+    return gulp.src([].concat(config.paths.app.style).map(x => path.join(config.paths.app.styleBase, x)), {
+            base: config.paths.app.styleBase
         })
         .pipe(cssFilter)
         .pipe(gprint(file => ' -> [' + 'app'.cyan + '] Stylesheet file: ' + file))
@@ -133,22 +132,22 @@ gulp.task('build-app-css', () => {
             footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
         }))
         .pipe(file('introduction.css', "/* AHS502 : Application stylesheet file : */"))
-        .pipe(concat(paths.app.stylesheet))
-        .pipe(gulp.dest(paths.dist))
+        .pipe(concat('app.css'))
+        .pipe(gulp.dest(config.paths.dist))
         .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Stylesheet file has been created.'.green))
         // .pipe(sourcemaps.init())
         .pipe(cssnano())
-        // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
-        .pipe(rename(paths.app.stylesheetMinified))
-        .pipe(gulp.dest(paths.dist))
+        // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(config.paths.dist))
+        .pipe(rename('app.min.css'))
+        .pipe(gulp.dest(config.paths.dist))
         .on('end', () => util.log(' => [' + 'app'.bold.cyan + '] ' + 'Minified stylesheet file has been created.'.green));
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('build-lib-js', () =>
-    gulp.src(paths.lib.js, {
-        base: paths.lib.base
+    gulp.src([].concat(config.paths.lib.js).map(x => path.join(config.paths.lib.jsBase, x)), {
+        base: config.paths.lib.jsBase
     })
     .pipe(gprint(file => ' -> [' + 'lib'.cyan + '] Javascript file: ' + file))
     .pipe(rename({
@@ -159,21 +158,21 @@ gulp.task('build-lib-js', () =>
         footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
     }))
     .pipe(file('introduction.js', "// AHS502 : Application libraries javascript file :"))
-    .pipe(concat(paths.lib.javascript))
-    .pipe(gulp.dest(paths.dist))
+    .pipe(concat('lib.js'))
+    .pipe(gulp.dest(config.paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Javascript file has been created.'.green))
     // // .pipe(sourcemaps.init())
     // .pipe(uglify())
-    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
-    .pipe(rename(paths.lib.javascriptMinified))
-    .pipe(gulp.dest(paths.dist))
+    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(config.paths.dist))
+    .pipe(rename('lib.min.js'))
+    .pipe(gulp.dest(config.paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Minified javascript file has been created.'.green)));
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('build-lib-css', () =>
-    gulp.src(paths.lib.css, {
-        base: paths.lib.base
+    gulp.src([].concat(config.paths.lib.css).map(x => path.join(config.paths.lib.cssBase, x)), {
+        base: config.paths.lib.cssBase
     })
     .pipe(gprint(file => ' -> [' + 'lib'.cyan + '] Stylesheet file: ' + file))
     .pipe(rename({
@@ -184,14 +183,14 @@ gulp.task('build-lib-css', () =>
         footer: "\n\n/*\n\tAHS502 : End of '${filename}'\n*/\n"
     }))
     .pipe(file('introduction.css', "/* AHS502 : Application libraries stylesheet file : */"))
-    .pipe(concat(paths.lib.stylesheet))
-    .pipe(gulp.dest(paths.dist))
+    .pipe(concat('lib.css'))
+    .pipe(gulp.dest(config.paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Stylesheet file has been created.'.green))
     // // .pipe(sourcemaps.init())
     // .pipe(cssnano())
-    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(paths.dist))
-    .pipe(rename(paths.lib.stylesheetMinified))
-    .pipe(gulp.dest(paths.dist))
+    // // .pipe(sourcemaps.write()) or .pipe(sourcemaps.write(config.paths.dist))
+    .pipe(rename('lib.min.css'))
+    .pipe(gulp.dest(config.paths.dist))
     .on('end', () => util.log(' => [' + 'lib'.bold.cyan + '] ' + 'Minified stylesheet file has been created.'.green)));
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -205,8 +204,8 @@ gulp.task('build-lib', ['build-lib-js', 'build-lib-css']);
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
 gulp.task('build-src', () =>
-    gulp.src(path.join(paths.src, '**/*.coffee'), {
-        base: paths.src
+    gulp.src(path.join(config.paths.src, '**/*.coffee'), {
+        base: config.paths.src
     })
     .pipe(gprint(file => ' -> [' + 'src'.magenta + '] Coffeescript file: ' + file))
     .pipe(coffee({
@@ -217,7 +216,7 @@ gulp.task('build-src', () =>
             util.log("\nSTACK: ".red.bold + error.stack);
         }))
     .pipe(gprint(file => ' -> [' + 'src'.bold.magenta + '] ' + file + ' has been created.'))
-    .pipe(gulp.dest(paths.src))
+    .pipe(gulp.dest(config.paths.src))
     .on('end', () => util.log(' => [' + 'src'.bold.cyan + '] ' + 'All server-side source files have been compiled.'.green)));
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
@@ -239,7 +238,7 @@ gulp.task('start-node', callback => {
 
     var child = childProcess.spawn('/usr/bin/node', ['./bin/start'], {
         env: {
-            PORT: config.nodePort
+            PORT: config.port
         }
     });
 
@@ -257,7 +256,7 @@ gulp.task('start-node', callback => {
 
 gulp.task('stop-node', callback => {
     if (pId) {
-        var res = syncExec('kill ' + pId);
+        syncExec('kill ' + pId);
         pId = undefined;
     }
     callback();
@@ -275,208 +274,45 @@ gulp.task('restart-node', callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('bind9', callback => {
-    var ip = config.serverIp || "11.22.33.44",
-        dns = config.dns || {},
-        named_conf_local = "",
-        zone_db = {},
-        mainDomain;
-
-    for (var domain in dns) {
-        mainDomain = mainDomain || domain;
-
-        var domainConfig = dns[domain] = dns[domain] || {},
-            ns = domainConfig.ns = domainConfig.ns || ["ns1"],
-            mail = domainConfig.mail = domainConfig.mail || "mail",
-            root = domainConfig.root = domainConfig.root || "host",
-            subdomains = domainConfig.subdomains = domainConfig.subdomains || ["www"],
-            data = domainConfig.data = domainConfig.data || {};
-        (subdomains.indexOf("www") < 0) && subdomains.push("www");
-        (subdomains.indexOf(mail) < 0) && subdomains.push(mail);
-        ns.forEach(ns0 => (subdomains.indexOf(ns0) < 0) && subdomains.push(ns0));
-        data["www"] = data["www"] || "CNAME";
-
-        var resolver = subdomain => {
-            var res = data[subdomain] || "A";
-            (res == "A") && (res = "A " + ip);
-            (res == "CNAME") && (res = "CNAME " + domain + ".");
-            return res;
-        };
-
-        named_conf_local +=
-            'zone "' + domain + '" {\n' +
-            '        type master;\n' +
-            '        file "/etc/bind/zones/' + domain + '.db";\n' +
-            '};\n' +
-            '\n';
-
-        var db =
-            "$TTL 86400\n" +
-            "@ IN SOA " + ns[0] + "." + domain + ". " + root + "." + domain + ". (\n" +
-            "               2016032700 ; Serial\n" +
-            "               7200       ; Refresh\n" +
-            "               120        ; Retry\n" +
-            "               2419200    ; Expire\n" +
-            "               604800)    ; Default TTL\n" +
-            "\n";
-        ns.forEach(ns0 => db += domain + ". IN NS " + ns0 + "." + domain + ".\n");
-        db +=
-            "\n" +
-            domain + ". IN MX 10 " + mail + "." + domain + ".\n" +
-            domain + ". IN A " + ip + "\n" +
-            "\n";
-        subdomains.forEach(subdomain => db += subdomain + " IN " + resolver(subdomain) + "\n");
-        zone_db[domain + ".db"] = db;
-    }
-
-    var reverseZone = ip.split('.').reverse().slice(1).join('.') + ".in-addr.arpa";
-
-    named_conf_local +=
-        'zone "' + reverseZone + '" {\n' +
-        '        type master;\n' +
-        '        file "/etc/bind/zones/rev.' + reverseZone + '";\n' +
-        '};\n' +
-        '\n';
-
-    zone_db["rev." + reverseZone] =
-        "$TTL 14400\n" +
-        "@ IN SOA " + mainDomain + ". " + dns[mainDomain].root + "." + mainDomain + ". (\n" +
-        "              2016032700 ; Serial\n" +
-        "              28800      ;\n" +
-        "              604800     ;\n" +
-        "              604800     ;\n" +
-        "              86400)     ;\n" +
-        "\n" +
-        "@ IN NS " + dns[mainDomain].ns[0] + "." + mainDomain + ".\n";
-
-    //TODO: What about '/etc/resolv.conf' ? It needs some R&D !
-
-    var streams = [file('named.conf.local', named_conf_local, {
-            src: true
-        })
-        .pipe(gulp.dest('/etc/bind/'))
-        .pipe(gprint(file => ' -> [' + 'bind9'.blue + '] ' + file + ' has been saved.'.green))
-    ];
-
-    for (var zoneFile in zone_db) {
-        streams.push(file(zoneFile, zone_db[zoneFile], {
-                src: true
-            })
-            .pipe(gulp.dest('/etc/bind/zones/'))
-            .pipe(gprint(file => ' -> [' + 'bind9'.blue + '] ' + file + ' has been saved.'.green)));
-    };
-
-    return merge.apply(this, streams)
-        .pipe(concat('dumb.file'))
-        .pipe(shell([
-            "./bin/bind9-zone-serial-update.sh",
-            "/etc/init.d/bind9 restart"
-        ], {
-            quiet: true
-        }))
-        .on('end', () => {
-            util.log(' => [' + 'bind9'.bold.blue + '] ' + 'Route servers have been set.'.green);
-            util.log(' -> [' + 'bind9'.bold.blue + '] ' + 'Use the following commands to check the results :');
-            util.log('            tail -f /var/log/syslog'.bold.cyan + '   It should contain no errors !'.gray);
-            util.log('            nslookup '.bold.cyan + 'domain.ir'.cyan + '        Check domain zone for every domain,'.gray);
-            util.log('            host '.bold.cyan + 'xx.xx.xx.xx'.cyan + '          Check reverse zone.'.gray);
-        });
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
-gulp.task('nginx', () => {
-    util.log(" -> [" + 'nginx'.yellow + "] Configuring nginx on your server...");
-
-    var data = "",
-        routesAll = (config && config.nginx) || {},
-        routes = {},
-        domain;
-
-    for (domain in routesAll) {
-        var refinedDomain = (domain.slice(-1) != '/' ? (domain + '/') : domain)
-        var domainName = refinedDomain.slice(0, refinedDomain.indexOf('/')).trim(),
-            domainPath = refinedDomain.slice(refinedDomain.indexOf('/')).trim();
-        routes[domainName] = routes[domainName] || {};
-        routes[domainName][domainPath] = routesAll[domain];
-    }
-
-    for (domain in routes) {
-        data +=
-            "server {\n" +
-            "    listen 80;\n" +
-            "    server_name " + domain + ";\n";
-        for (var route in routes[domain]) {
-            data +=
-                "    location " + (route => ((route.slice(-1) != "/") ? (route + "/") : route))((route.slice(0, 1) != "/") ? ("/" + route) : route) + " {\n" +
-                "        proxy_pass " + (route => ((route.slice(-1) != "/") ? (route + "/") : route))(routes[domain][route]) + ";\n" +
-                "        proxy_http_version 1.1;\n" +
-                "        proxy_set_header Upgrade $http_upgrade;\n" +
-                "        proxy_set_header Connection 'upgrade';\n" +
-                "        proxy_set_header Host $host;\n" +
-                "        proxy_cache_bypass $http_upgrade;\n" +
-                "        # proxy_set_header X-Real-IP $remote_addr;\n" +
-                "        # proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n" +
-                "        # proxy_set_header X-Forwarded-Proto $scheme;\n" +
-                "    }\n";
-        }
-        data +=
-            "}\n" +
-            "\n";
-    }
-
-    return file('default', data, {
-            src: true
-        })
-        .pipe(gulp.dest('/etc/nginx/sites-available/'))
-        .pipe(shell([
-            "sudo service nginx start",
-            "sudo nginx -s reload"
-        ], {
-            quiet: true
-        }))
-        .on('end', () => util.log(' => [' + 'nginx'.bold.yellow + '] ' + 'Route servers have been set.'.green));
-});
-
-//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-
 gulp.task('watch', callback => {
 
-    gulp.watch(path.join(paths.app.src, '**/*.js'), ['build-app-js']);
-    gulp.watch(path.join(paths.app.src, '**/*.coffee'), ['build-app-js']);
-    gulp.watch(path.join(paths.app.style, '**/*.css'), ['build-app-css']);
-    gulp.watch(path.join(paths.app.style, '**/*.less'), ['build-app-css']);
+    gulp.watch(path.join(config.paths.app.srcBase, '**/*.js'), ['build-app-js']);
+    gulp.watch(path.join(config.paths.app.srcBase, '**/*.coffee'), ['build-app-js']);
+    gulp.watch(path.join(config.paths.app.styleBase, '**/*.css'), ['build-app-css']);
+    gulp.watch(path.join(config.paths.app.styleBase, '**/*.less'), ['build-app-css']);
 
-    gulp.watch(path.join(paths.src, '**/*.coffee'), ['build-src']);
-    gulp.watch(path.join(paths.src, '**/*.js'), ['restart-node']);
-    gulp.watch(paths.routes, ['restart-node']);
+    gulp.watch(path.join(config.paths.src, '**/*.coffee'), ['build-src']);
+    gulp.watch(path.join(config.paths.src, '**/*.js'), ['restart-node']);
+    gulp.watch(config.paths.routes, ['restart-node']);
 
     callback();
 });
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-gulp.task('browser-sync', ['nginx'], callback => {
+gulp.task('browser-sync', callback => {
+    if (!config.browserSync.enable)
+        return callback();
 
     bs = browserSync.create("ahs502-nodapp-bs");
-    bs.init(config.browserSync, () => {
+    bs.init(config.browserSync.options, () => {
 
         gulp.watch([
-            path.join(paths.dist, paths.app.javascriptMinified),
-            path.join(paths.dist, paths.lib.javascriptMinified)
+            path.join(config.paths.dist, 'app.min.js'),
+            path.join(config.paths.dist, 'lib.min.js')
         ]).on("change", bs.reload);
 
-        gulp.watch(path.join(paths.dist, paths.app.stylesheetMinified))
-            .on("change", () => bs.reload(path.join(paths.dist, paths.app.stylesheetMinified)));
+        gulp.watch(path.join(config.paths.dist, 'app.min.css'))
+            .on("change", () => bs.reload(path.join(config.paths.dist, 'app.min.css')));
 
-        gulp.watch(path.join(paths.dist, paths.lib.stylesheetMinified))
-            .on("change", () => bs.reload(path.join(paths.dist, paths.lib.stylesheetMinified)));
+        gulp.watch(path.join(config.paths.dist, 'lib.min.css'))
+            .on("change", () => bs.reload(path.join(config.paths.dist, 'lib.min.css')));
 
-        gulp.watch(paths.views).on("change", bs.reload);
-        gulp.watch(paths.assets).on("change", bs.reload);
+        gulp.watch(config.paths.views).on("change", bs.reload);
+        gulp.watch(config.paths.assets).on("change", bs.reload);
 
-        gulp.watch(path.join(paths.src, '**/*.js')).on("change", bs.reload);
-        gulp.watch(paths.routes).on("change", bs.reload);
+        gulp.watch(path.join(config.paths.src, '**/*.js')).on("change", bs.reload);
+        gulp.watch(config.paths.routes).on("change", bs.reload);
 
         callback();
     });
@@ -561,33 +397,33 @@ gulp.task('help', callback => {
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-function appPath(basePath, extensions, reverse /*=false*/ , deepName /*='*'*/ ) {
-    deepName = deepName || '*';
-
-    function subPath(midPath) {
-        return extensions.map(extension => path.join(basePath, midPath, '*.' + extension));
-    }
-
-    function midPath(number) {
-        return '/' + Array(number + 1).join(deepName + '/');
-    }
-
-    var files = [
-        subPath(midPath(0)),
-        subPath(midPath(1)),
-        subPath(midPath(2)),
-        subPath(midPath(3)),
-        subPath(midPath(4)),
-        subPath(midPath(5)),
-        subPath(midPath(6)),
-        subPath(midPath(7)),
-        subPath(midPath(8)),
-        subPath(midPath(9)),
-        subPath(midPath(9) + '**/')
-    ].reduce((total, current, index, array) => total.concat(current), []);
-    reverse && files.reverse();
-    return files;
-}
+// function appPath(basePath, extensions, reverse /*=false*/ , deepName /*='*'*/ ) {
+//     deepName = deepName || '*';
+//
+//     function subPath(midPath) {
+//         return extensions.map(extension => path.join(basePath, midPath, '*.' + extension));
+//     }
+//
+//     function midPath(number) {
+//         return '/' + Array(number + 1).join(deepName + '/');
+//     }
+//
+//     var files = [
+//         subPath(midPath(0)),
+//         subPath(midPath(1)),
+//         subPath(midPath(2)),
+//         subPath(midPath(3)),
+//         subPath(midPath(4)),
+//         subPath(midPath(5)),
+//         subPath(midPath(6)),
+//         subPath(midPath(7)),
+//         subPath(midPath(8)),
+//         subPath(midPath(9)),
+//         subPath(midPath(9) + '**/')
+//     ].reduce((total, current, index, array) => total.concat(current), []);
+//     reverse && files.reverse();
+//     return files;
+// }
 
 //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 

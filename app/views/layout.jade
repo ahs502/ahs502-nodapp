@@ -2,75 +2,73 @@ doctype html
 
 block vars
 
-- title         = title         || config.meta.manifest.options.short_name;
-- offline       = offline       || (offline === undefined) ? false : offline;  // Load HTML5 cache-manifest for this site ?
-- webappCapable = webappCapable || offline;
-- loadAllFirst  = loadAllFirst  || (loadAllFirst === undefined) ? true : loadAllFirst;  // Load any .js & .css dependency at the very first
+- title         = title         || config.webapp.androidManifest.options.short_name;
+- offline       = offline       || (offline === undefined) ? config.webapp.offline : offline;   // Load HTML5 cache-manifest for this site ? 
+- webappCapable = webappCapable || config.webapp.webappCapable || offline;                      // If 'offline' then 'webappCapable' 
+- loadAllFirst  = loadAllFirst  || (loadAllFirst === undefined) ? true : loadAllFirst;          // Load any .js & .css dependency at the very first 
 - lang          = lang          || "en";
 
 - ngApp         = ngApp         || undefined;
 - ngController  = ngController  || undefined;
 
-- viewport              = viewport              || {};
-- viewport.width        = viewport.width        || config.meta.viewport.width;
-- viewport.initialScale = viewport.initialScale || config.meta.viewport.initialScale;
-- viewport.maximumScale = viewport.maximumScale || config.meta.viewport.maximumScale;
-- viewport.userScalable = viewport.userScalable || config.meta.viewport.userScalable;
-
-- ms            = ms            || {};
-- ms.tileColor  = ms.tileColor  || config.meta.manifest.options.background_color  || "#FFF";
-- ms.name       = ms.name       || config.meta.manifest.options.short_name        || title;
-- ms.tooltip    = ms.tooltip    || config.meta.manifest.options.name              || ms.name;
-
-- cacheManifestUrl    = '/' + config.meta.urlPrefix + '/' + config.meta.offlineCache.cacheManifestFile;
-- androidManifestUrl  = '/' + config.meta.urlPrefix + '/' + config.meta.manifest.manifestFile;
+- viewport                    = viewport                    || {};
+- viewport["width"]           = viewport["width"]           || "device-width";
+- viewport["initial-scale"]   = viewport["initial-scale"]   || 1;
+- viewport["maximum-scale"]   = viewport["maximum-scale"]   || 1;
+- viewport["user-scalable"]   = viewport["user-scalable"]   || "no";
 
 - htmlAttrs                   = htmlAttrs                   || {};
 - htmlAttrs.lang              = htmlAttrs.lang              || lang;
-- htmlAttrs.manifest          = htmlAttrs.manifest          || (offline ? cacheManifestUrl : undefined);
+- htmlAttrs.manifest          = htmlAttrs.manifest          || (offline ? config.webapp.cacheManifestUrl : undefined);
 - htmlAttrs["ng-app"]         = htmlAttrs["ng-app"]         || ngApp;
 - htmlAttrs["ng-controller"]  = htmlAttrs["ng-controller"]  || ngController;
+
+- viewportContent = []; for(p in viewport) viewportContent.push(p + '=' + viewport[p]); viewportContent = viewportContent.join(', ');
 
 html&attributes(htmlAttrs)
 
   head
   
     if loadAllFirst
-      link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
-      link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
-      script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
-      script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
+      link(rel='stylesheet', href='/dist/lib.min.css')
+      link(rel='stylesheet', href='/dist/app.min.css')
+      script(src='/dist/lib.min.js')
+      script(src='/dist/app.min.js')
+    
+    // All meta & link tags
+    // See: https://gist.github.com/kevinSuttle/1997924
     
     title= title
     meta(charset="utf-8")
-    meta(name="viewport" content="width=#{viewport.width}, initial-scale=#{viewport.initialScale}, maximum-scale=#{viewport.maximumScale}, user-scalable=#{viewport.userScalable}")
+    meta(name="viewport" content="#{viewportContent}")
     
     link(rel="apple-touch-icon" href="/assets/icon/apple-touch-icon.png")
     link(rel="shortcut icon" href="/assets/icon/shortcut-icon.png")
     
     if webappCapable
+    
       meta(name="apple-mobile-web-app-capable" content="yes")
       meta(name="mobile-web-app-capable" content="yes")
-      link(rel="manifest")&attributes({href: androidManifestUrl})
+      link(rel="manifest")&attributes({href: config.webapp.androidManifestUrl})
       
-    meta(name='msapplication-TileColor', content=ms.tileColor)
-    meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
-    meta(name='msapplication-config', content='none')
-    meta(name='application-name', content=ms.name)
-    meta(name='msapplication-tooltip', content=ms.tooltip)
-    meta(name='msapplication-square70x70logo', content='/assets/icon/pin-icon_70x70.png')
-    meta(name='msapplication-square150x150logo', content='/assets/icon/pin-icon_150x150.png')
-    meta(name='msapplication-square310x310logo', content='/assets/icon/pin-icon_310x310.png')
-    meta(name='msapplication-wide310x150logo', content='/assets/icon/pin-icon_310x150.png')
-    // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
+      meta(name='application-name', content='AHS502-Nodapp')
+      meta(name='msapplication-tooltip', content='AHS502-Nodapp Installable WebApp')
+      meta(name='msapplication-TileColor', content='white')
+      meta(name='msapplication-TileImage', content='/assets/icon/large-icon.png')
+      meta(name='msapplication-square70x70logo', content='/assets/icon/pin-icon_70x70.png')
+      meta(name='msapplication-square150x150logo', content='/assets/icon/pin-icon_150x150.png')
+      meta(name='msapplication-square310x310logo', content='/assets/icon/pin-icon_310x310.png')
+      meta(name='msapplication-wide310x150logo', content='/assets/icon/pin-icon_310x150.png')
+      meta(name='msapplication-config', content='none')
+      // See: https://msdn.microsoft.com/library/dn255024(v=vs.85).aspx
 
     <!--[if lt IE 9]>
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
     
     if !loadAllFirst
-      link(rel='stylesheet', href='/dist/#{config.buildPaths.lib.stylesheetMinified}')
-      link(rel='stylesheet', href='/dist/#{config.buildPaths.app.stylesheetMinified}')
+      link(rel='stylesheet', href='/dist/lib.min.css')
+      link(rel='stylesheet', href='/dist/app.min.css')
     
     block head
     
@@ -79,8 +77,8 @@ html&attributes(htmlAttrs)
     block body
     
     if !loadAllFirst
-      script(src='/dist/#{config.buildPaths.lib.javascriptMinified}')
-      script(src='/dist/#{config.buildPaths.app.javascriptMinified}')
+      script(src='/dist/lib.min.js')
+      script(src='/dist/app.min.js')
     
     block views
     

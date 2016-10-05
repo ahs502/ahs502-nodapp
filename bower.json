@@ -1,7 +1,7 @@
 {
   "name": "ahs502-nodejs-template",
   "description": "A Node.js-based template for WebServer of WebApps.",
-  "main": "./bin/www",
+  "main": "./bin/start",
   "authors": [
     "Hessam A Shokravi <ahs502@gmail.com>"
   ],

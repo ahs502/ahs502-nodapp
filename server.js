@@ -48,10 +48,8 @@ app.use('/dist', express.static(path.join(__dirname, 'app/dist')));
 app.use('/assets', express.static(path.join(__dirname, 'app/assets')));
 
 // setup meta server
-app.use(path.join('/', config.meta.urlPrefix, config.meta.offlineCache.cacheManifestFile),
-    metaCacheManifestHandler(config.meta.offlineCache));
-app.use(path.join('/', config.meta.urlPrefix, config.meta.manifest.manifestFile),
-    metaAndroidManifestHandler(config.meta.manifest.options));
+app.use(config.webapp.offlineCache.cacheManifestUrl, metaCacheManifestHandler(config.webapp.offlineCache));
+app.use(config.webapp.androidManifest.androidManifestUrl, metaAndroidManifestHandler(config.webapp.androidManifest.options));
 
 // add the functionality to set the listen path for express's routers
 express.RouterFor = function(routeBase, options) {
@@ -61,7 +59,9 @@ express.RouterFor = function(routeBase, options) {
 };
 
 // load route controllers
-+ function extractRoutes(folder) {
++
+
+function extractRoutes(folder) {
     // folder :> 'routes' or 'routes/etc'
     var items = fs.readdirSync(folder);
     items.forEach(item => {
@@ -141,6 +141,8 @@ module.exports = app;
 
 function metaCacheManifestHandler(options /* Most likely is config.meta.offlineCache */ ) {
 
+    var metaCacheManifest = null;
+
     return (req, res, next) =>
         generateCacheManifest((err, cacheManifest) => {
             if (err) {
@@ -156,33 +158,45 @@ function metaCacheManifestHandler(options /* Most likely is config.meta.offlineC
         });
 
     function generateCacheManifest(callback /*(err, cacheManifest)*/ ) {
-        generateListOfCacheItems((err, cacheItems, lastModifiedTime) => {
-            if (err) {
-                callback(err);
-            }
-            else {
-                var a = [];
-                a.push('CACHE MANIFEST');
-                a.push('# ' + lastModifiedTime);
-                a.push('');
-                a.push('CACHE:');
-                cacheItems.forEach(item => a.push(item));
-                a.push('');
-                a.push('FALLBACK:');
-                options.fallbacks.forEach(item => a.push(item));
-                a.push('');
-                a.push('NETWORK:');
-                options.networks.forEach(item => a.push(item));
-                a.push('');
-                callback(null, a.join('\n'));
-            }
-        });
+        if (metaCacheManifest) {
+            callback(null, metaCacheManifest);
+        }
+        else {
+            generateListOfCacheItems((err, cacheItems, lastModifiedTime) => {
+                if (err) {
+                    callback(err);
+                }
+                else {
+                    try {
+                        var a = [];
+                        a.push('CACHE MANIFEST');
+                        a.push('# ' + lastModifiedTime);
+                        a.push('# Version = ' + config.cacheManifest);
+                        a.push('');
+                        a.push('CACHE:');
+                        cacheItems.forEach(item => a.push(item));
+                        a.push('');
+                        a.push('FALLBACK:');
+                        options.fallbacks.forEach(item => a.push(item));
+                        a.push('');
+                        a.push('NETWORK:');
+                        options.networks.forEach(item => a.push(item));
+                        a.push('');
+                        metaCacheManifest = a.join('\n');
+                        callback(null, metaCacheManifest);
+                    }
+                    catch (err) {
+                        callback(err);
+                    }
+                }
+            });
+        }
     }
 
     function generateListOfCacheItems(callback /*(err, cacheItems, lastModifiedTime)*/ ) {
         var folders = options.folders,
             files = options.files,
-            deps = options.deps,
+            dependencies = options.dependencies,
             cacheItems = [],
             lastModifiedTime = 0,
             modifiedTime,
@@ -200,7 +214,7 @@ function metaCacheManifestHandler(options /* Most likely is config.meta.offlineC
             catch (err) {}
         });
 
-        deps.forEach(dep => walkSync(dep, null, (file, stat) => {
+        dependencies.forEach(dep => walkSync(dep, null, (file, stat) => {
             lastModifiedTime = lastModifiedTime > stat.mtime ? lastModifiedTime : stat.mtime;
         }, null));
 
@@ -343,11 +357,13 @@ function walkSync(path, callbackFolder /*(folder, stat)*/ , callbackFile /*(file
 
 function metaAndroidManifestHandler(options /* Most likely is config.meta.manifest.options */ ) {
 
+    var metaAndroidManifest = null;
+
     return (req, res, next) => {
-        var manifest = JSON.stringify(options, null, 4) + '\n';
+        metaAndroidManifest = metaAndroidManifest || JSON.stringify(options, null, 4) + '\n';
         res.statusCode = 200;
-        res.setHeader('content-length', Buffer.byteLength(manifest));
-        res.end(manifest);
+        res.setHeader('content-length', Buffer.byteLength(metaAndroidManifest));
+        res.end(metaAndroidManifest);
     };
 
 }
